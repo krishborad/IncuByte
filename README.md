@@ -83,8 +83,12 @@ Full-stack authentication system built using Repository → Service → Controll
 - **Input Validation**: Dedicated validator middlewares (`backend/src/validators/auth.validator.ts`).
 - **Centralized Error Handling**: Standardized JSON error responses (`backend/src/middlewares/error.middleware.ts`).
 
-## Vehicle Data Model
+## Vehicle Inventory System
 
+### Endpoints
+- `POST /api/vehicles` - Add a new vehicle to dealership inventory (**Admin Only**, Requires `Bearer <token>` with `role: 'admin'`)
+
+### Data Model & Validation
 The Vehicle schema (`backend/src/models/vehicle.model.ts`) defines the core data model for dealership inventory items with comprehensive validation constraints:
 
 | Field | Type | Validation Rules | Description |
@@ -107,6 +111,7 @@ The Vehicle schema (`backend/src/models/vehicle.model.ts`) defines the core data
 ## Running Tests
 - Backend tests: `npm test` (from `backend/` directory)
 - Frontend tests: `npm test` (from `frontend/` directory)
+
 
 
 

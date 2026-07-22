@@ -346,6 +346,54 @@ This document records all AI interactions, prompts, responses, and manual change
 - **Manual Changes**: None
 - **Final Outcome**: Vehicle Mongoose Schema and data validation model successfully implemented with 100% test coverage and pushed to GitHub.
 
+---
+
+## Step 8
+- **Date**: 2026-07-22
+- **Feature**: Add Vehicle API Endpoint (Admin Only & Input Validation)
+- **AI Tool**: Antigravity (Gemini 3.6 Flash (High))
+- **Exact Prompt**:
+  ```text
+  Create Add Vehicle endpoint.
+
+  Admin only.
+
+  Validation.
+
+  Tests first.
+
+  Implement.
+
+  Run tests.
+
+  Update docs.
+
+  Commit.
+
+  Push.
+
+  Stop.
+  ```
+- **AI Response Summary**:
+  - Followed strict TDD workflow (RED → GREEN → REFACTOR).
+  - **RED Phase**:
+    - Wrote `VehicleService` unit tests in `backend/src/tests/vehicle.service.test.ts`.
+    - Wrote `POST /api/vehicles` integration tests in `backend/src/tests/vehicle.api.test.ts` for Admin creation (`201 Created`), non-admin block (`403 Forbidden`), unauthenticated block (`401 Unauthorized`), and validation checks (`400 Bad Request`). Verified test failures prior to implementation.
+  - **GREEN Phase**: Built feature across Repository → Service → Controller layers:
+    - VehicleRepository (`backend/src/repositories/vehicle.repository.ts`).
+    - VehicleService (`backend/src/services/vehicle.service.ts`).
+    - Vehicle Validator (`backend/src/validators/vehicle.validator.ts`).
+    - VehicleController (`backend/src/controllers/vehicle.controller.ts`).
+    - Vehicle Routes (`backend/src/routes/vehicle.routes.ts`) protecting `POST /` with `authenticate`, `requireAdmin`, and `validateVehicle`. Mounted at `/api/vehicles` in `backend/src/app.ts`.
+  - **REFACTOR Phase**: Cleaned up route mounting and type interfaces.
+  - **Verification**: Executed backend test suite. All 47 unit & integration tests passed cleanly (100%).
+  - Updated `README.md` with Add Vehicle endpoint documentation and appended interaction log to `PROMPTS.md`.
+  - Committed and pushed feature to GitHub (`https://github.com/krishborad/IncuByte.git`).
+  - Stopped as instructed.
+- **Manual Changes**: None
+- **Final Outcome**: Add Vehicle admin-protected endpoint successfully implemented with 100% test coverage and pushed to GitHub.
+
+
 
 
 
