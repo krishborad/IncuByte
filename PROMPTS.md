@@ -708,6 +708,49 @@ This document records all AI interactions, prompts, responses, and manual change
 - **Manual Changes**: None
 - **Final Outcome**: Backend architecture improved with centralized error handling and zero code duplication in validators; 100% test pass rate maintained.
 
+---
+
+## Step 16
+- **Date**: 2026-07-22
+- **Feature**: Frontend Architecture, Routing, Axios Client, AuthContext, Route Guards & Testing
+- **AI Tool**: Antigravity (Gemini 3.6 Flash (High))
+- **Exact Prompt**:
+  ```text
+  Configure frontend architecture.
+
+  Routing.
+
+  Axios.
+
+  Authentication Context.
+
+  Protected Routes.
+
+  Tailwind layout.
+
+  Testing setup.
+
+  Commit.
+
+  Push.
+
+  Stop.
+  ```
+- **AI Response Summary**:
+  - **Type System**: Created TypeScript interfaces in `frontend/src/types/index.ts` (`User`, `Vehicle`, `AuthContextType`, `Pagination`).
+  - **API Client**: Configured Axios client in `frontend/src/services/api.ts` with request interceptor attaching Bearer tokens and response interceptor auto-clearing session on `401 Unauthorized`.
+  - **Auth Context & Hook**: Built `AuthContext` and `AuthProvider` in `frontend/src/contexts/AuthContext.tsx` with `localStorage` persistence and `useAuth` hook in `frontend/src/hooks/useAuth.ts`.
+  - **Route Guards**: Created `ProtectedRoute` (`frontend/src/routes/ProtectedRoute.tsx`) and `AdminRoute` (`frontend/src/routes/AdminRoute.tsx`) with spinner loading state and navigation redirects.
+  - **Tailwind UI Layout**: Built responsive, glassmorphism `Navbar` (`frontend/src/components/Navbar.tsx`) with logo, links, role badges, and logout controls; `Footer` (`frontend/src/components/Footer.tsx`); and `MainLayout` (`frontend/src/layouts/MainLayout.tsx`).
+  - **Router & Pages**: Assembled React Router v6 in `frontend/src/App.tsx` with base pages (`HomePage`, `LoginPage`, `RegisterPage`, `AdminDashboardPage`, `NotFoundPage`).
+  - **RTL Testing**: Configured React Testing Library tests (`Navbar.test.tsx`, `ProtectedRoute.test.tsx`, `smoke.test.ts`). All 81 workspace tests (75 backend, 6 frontend) passed cleanly (100%).
+  - Updated `README.md` and appended interaction log to `PROMPTS.md`.
+  - Committed and pushed frontend architecture to GitHub (`https://github.com/krishborad/IncuByte.git`).
+  - Stopped as instructed.
+- **Manual Changes**: None
+- **Final Outcome**: Frontend architecture fully initialized with Routing, Axios API interceptors, Auth Context, Protected Route guards, Tailwind layout, and React Testing Library setup with 100% test coverage.
+
+
 
 
 

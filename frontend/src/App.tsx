@@ -1,13 +1,37 @@
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import MainLayout from './layouts/MainLayout';
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import AdminDashboardPage from './pages/AdminDashboardPage';
+import NotFoundPage from './pages/NotFoundPage';
+import AdminRoute from './routes/AdminRoute';
 
-function App() {
+export const App: React.FC = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-brand-50">
-      <div className="p-8 max-w-sm bg-white rounded-xl shadow-lg space-y-4">
-        <h1 className="text-2xl font-bold text-brand-700">Car Dealership</h1>
-        <p className="text-slate-500">Welcome to the Car Dealership Inventory System.</p>
-      </div>
-    </div>
+    <Router>
+      <AuthProvider>
+        <MainLayout>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <AdminDashboardPage />
+                </AdminRoute>
+              }
+            />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </MainLayout>
+      </AuthProvider>
+    </Router>
   );
-}
+};
 
 export default App;
