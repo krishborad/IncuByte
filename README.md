@@ -65,6 +65,21 @@ The system uses Mongoose to manage MongoDB Atlas / MongoDB connection logic (`ba
 - Environment Variable: `MONGO_URI`
 - Supports connection & disconnection lifecycle handling with full unit test coverage (`src/tests/db.test.ts`).
 
+## Authentication System
+
+Full-stack authentication system built using Repository → Service → Controller architecture, bcrypt password hashing, JWT tokens, and strict input validation.
+
+### Endpoints
+- `POST /api/auth/register` - Register a new user (`name`, `email`, `password`, `role`)
+- `POST /api/auth/login` - Authenticate user and receive JWT token (`email`, `password`)
+
+### Features & Security
+- **Password Hashing**: Automatic pre-save bcrypt salt & hashing in Mongoose User model (`backend/src/models/user.model.ts`).
+- **Duplicate Email Prevention**: Instant lookup & validation rejecting existing email registrations.
+- **JWT Authorization**: Utility for signing and verifying tokens (`backend/src/utils/jwt.utils.ts`).
+- **Input Validation**: Dedicated validator middlewares (`backend/src/validators/auth.validator.ts`).
+- **Centralized Error Handling**: Standardized JSON error responses (`backend/src/middlewares/error.middleware.ts`).
+
 ## Running the Application
 - Backend development server: `npm run dev` (from `backend/` directory)
 - Frontend development server: `npm run dev` (from `frontend/` directory)
@@ -72,4 +87,5 @@ The system uses Mongoose to manage MongoDB Atlas / MongoDB connection logic (`ba
 ## Running Tests
 - Backend tests: `npm test` (from `backend/` directory)
 - Frontend tests: `npm test` (from `frontend/` directory)
+
 

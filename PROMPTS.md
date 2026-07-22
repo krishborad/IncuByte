@@ -190,5 +190,65 @@ This document records all AI interactions, prompts, responses, and manual change
 - **Manual Changes**: None
 - **Final Outcome**: MongoDB Atlas connection module implemented using strict TDD, fully covered by unit tests, documented, and pushed to GitHub.
 
+---
+
+## Step 5
+- **Date**: 2026-07-22
+- **Feature**: Complete Authentication System (User Model, Register, Login, JWT, bcrypt, Validation, Duplicate Email Check)
+- **AI Tool**: Antigravity (Gemini 3.6 Flash (High))
+- **Exact Prompt**:
+  ```text
+  Implement complete authentication.
+
+  User Model
+
+  Register
+
+  Login
+
+  JWT
+
+  Password hashing
+
+  Validation
+
+  Duplicate email
+
+  Write tests first.
+
+  Implement.
+
+  Run tests.
+
+  Refactor.
+
+  Update documentation.
+
+  Commit.
+
+  Push.
+
+  Stop.
+  ```
+- **AI Response Summary**:
+  - Followed strict TDD workflow (RED → GREEN → REFACTOR).
+  - **RED Phase**: Created comprehensive unit and integration test files (`backend/src/tests/jwt.utils.test.ts`, `backend/src/tests/auth.service.test.ts`, `backend/src/tests/auth.api.test.ts`). Confirmed test failures prior to implementation.
+  - **GREEN Phase**: Built authentication layer following Repository → Service → Controller architecture:
+    - User Model (`backend/src/models/user.model.ts`) with pre-save bcrypt salt/hash and `comparePassword` instance method.
+    - UserRepository (`backend/src/repositories/user.repository.ts`) for data access.
+    - AuthService (`backend/src/services/auth.service.ts`) with duplicate email check, password validation, user registration, login authentication, and JWT payload signing.
+    - Input Validators (`backend/src/validators/auth.validator.ts`) for payload validation.
+    - Centralized Error Handler (`backend/src/middlewares/error.middleware.ts`).
+    - Auth Controller (`backend/src/controllers/auth.controller.ts`) and Routes (`backend/src/routes/auth.routes.ts`) mounted at `/api/auth`.
+    - JWT Utilities (`backend/src/utils/jwt.utils.ts`) for token generation and verification.
+  - **REFACTOR Phase**: Refactored API tests using `jest.spyOn` for clean, fast, deterministic execution without external binary dependencies.
+  - **Verification**: Executed backend test suite. All 21 unit & integration tests passed cleanly (100%).
+  - Updated `README.md` with Authentication documentation and appended interaction log to `PROMPTS.md`.
+  - Committed and pushed feature to GitHub (`https://github.com/krishborad/IncuByte.git`).
+  - Stopped as instructed.
+- **Manual Changes**: None
+- **Final Outcome**: Full-stack authentication system successfully implemented, thoroughly tested, documented, and pushed to GitHub.
+
+
 
 
