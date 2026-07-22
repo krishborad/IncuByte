@@ -671,6 +671,44 @@ This document records all AI interactions, prompts, responses, and manual change
 - **Manual Changes**: None
 - **Final Outcome**: Restock Vehicle admin-protected endpoint with inventory increment successfully implemented with 100% test coverage and pushed to GitHub.
 
+---
+
+## Step 15
+- **Date**: 2026-07-22
+- **Feature**: Backend Architectural Review, Code Refactoring & Error Handling Optimization
+- **AI Tool**: Antigravity (Gemini 3.6 Flash (High))
+- **Exact Prompt**:
+  ```text
+  Review backend.
+
+  Improve architecture.
+
+  Remove duplication.
+
+  Improve validation.
+
+  Improve error handling.
+
+  Run every backend test.
+
+  Fix issues.
+
+  Commit.
+
+  Push.
+
+  Stop.
+  ```
+- **AI Response Summary**:
+  - **Architecture & Error Handling**: Created domain error classes in `backend/src/utils/errors.ts` (`AppError`, `NotFoundError`, `BadRequestError`, `UnauthorizedError`, `ForbiddenError`, `ConflictError`). Replaced ad-hoc `error: any` mutations across `AuthService` and `VehicleService` with typed domain exceptions.
+  - **Validation & DRY Refactoring**: Refactored `backend/src/validators/vehicle.validator.ts` by extracting a modular `validateFields` helper function, removing over 50 lines of duplicated field validation logic between creation and update middlewares.
+  - **Verification**: Executed backend test suite. All 75 unit & integration tests passed cleanly (100%).
+  - Committed and pushed architecture refactor to GitHub (`https://github.com/krishborad/IncuByte.git`).
+  - Stopped as instructed.
+- **Manual Changes**: None
+- **Final Outcome**: Backend architecture improved with centralized error handling and zero code duplication in validators; 100% test pass rate maintained.
+
+
 
 
 

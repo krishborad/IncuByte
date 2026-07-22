@@ -1,6 +1,6 @@
 import { UserRepository } from '../repositories/user.repository';
 import { generateToken } from '../utils/jwt.utils';
-import { IUser } from '../models/user.model';
+import { BadRequestError, UnauthorizedError } from '../utils/errors';
 
 export interface RegisterDto {
   name: string;
@@ -31,9 +31,7 @@ export class AuthService {
   async register(dto: RegisterDto): Promise<AuthResponse> {
     const existingUser = await this.userRepository.findByEmail(dto.email);
     if (existingUser) {
-      const error = new Error('Email is already in use');
-      (error as any).statusCode = 400;
-      throw error;
+      throw new BadRequestError('Email is already in use');
     }
 
     const newUser = await this.userRepository.create({
@@ -63,16 +61,12 @@ export class AuthService {
   async login(dto: LoginDto): Promise<AuthResponse> {
     const user = await this.userRepository.findByEmail(dto.email, true);
     if (!user) {
-      const error = new Error('Invalid email or password');
-      (error as any).statusCode = 401;
-      throw error;
+      throw new UnauthorizedError('Invalid email or password');
     }
 
     const isMatch = await user.comparePassword(dto.password);
     if (!isMatch) {
-      const error = new Error('Invalid email or password');
-      (error as any).statusCode = 401;
-      throw error;
+      throw new UnauthorizedError('Invalid email or password');
     }
 
     const token = generateToken({

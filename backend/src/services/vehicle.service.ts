@@ -1,5 +1,6 @@
 import { VehicleRepository } from '../repositories/vehicle.repository';
 import { IVehicle } from '../models/vehicle.model';
+import { NotFoundError, BadRequestError } from '../utils/errors';
 
 export interface VehicleQueryOptions {
   page?: string | number;
@@ -110,9 +111,7 @@ export class VehicleService {
   async updateVehicle(id: string, updateData: Partial<IVehicle>): Promise<IVehicle> {
     const updatedVehicle = await this.vehicleRepository.update(id, updateData);
     if (!updatedVehicle) {
-      const error: any = new Error('Vehicle not found');
-      error.statusCode = 404;
-      throw error;
+      throw new NotFoundError('Vehicle not found');
     }
     return updatedVehicle;
   }
@@ -120,9 +119,7 @@ export class VehicleService {
   async deleteVehicle(id: string): Promise<IVehicle> {
     const deletedVehicle = await this.vehicleRepository.softDelete(id);
     if (!deletedVehicle) {
-      const error: any = new Error('Vehicle not found');
-      error.statusCode = 404;
-      throw error;
+      throw new NotFoundError('Vehicle not found');
     }
     return deletedVehicle;
   }
@@ -130,22 +127,16 @@ export class VehicleService {
   async purchaseVehicle(id: string, quantity: number = 1): Promise<IVehicle> {
     const existingVehicle = await this.vehicleRepository.findById(id);
     if (!existingVehicle) {
-      const error: any = new Error('Vehicle not found');
-      error.statusCode = 404;
-      throw error;
+      throw new NotFoundError('Vehicle not found');
     }
 
     if (existingVehicle.stock < quantity) {
-      const error: any = new Error('Vehicle is out of stock');
-      error.statusCode = 400;
-      throw error;
+      throw new BadRequestError('Vehicle is out of stock');
     }
 
     const updatedVehicle = await this.vehicleRepository.decreaseStock(id, quantity);
     if (!updatedVehicle) {
-      const error: any = new Error('Vehicle is out of stock');
-      error.statusCode = 400;
-      throw error;
+      throw new BadRequestError('Vehicle is out of stock');
     }
 
     return updatedVehicle;
@@ -153,23 +144,17 @@ export class VehicleService {
 
   async restockVehicle(id: string, quantity: number): Promise<IVehicle> {
     if (!quantity || typeof quantity !== 'number' || quantity <= 0) {
-      const error: any = new Error('Restock quantity must be a positive integer');
-      error.statusCode = 400;
-      throw error;
+      throw new BadRequestError('Restock quantity must be a positive integer');
     }
 
     const existingVehicle = await this.vehicleRepository.findById(id);
     if (!existingVehicle) {
-      const error: any = new Error('Vehicle not found');
-      error.statusCode = 404;
-      throw error;
+      throw new NotFoundError('Vehicle not found');
     }
 
     const updatedVehicle = await this.vehicleRepository.increaseStock(id, quantity);
     if (!updatedVehicle) {
-      const error: any = new Error('Vehicle not found');
-      error.statusCode = 404;
-      throw error;
+      throw new NotFoundError('Vehicle not found');
     }
 
     return updatedVehicle;
