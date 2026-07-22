@@ -1,9 +1,11 @@
 import request from 'supertest';
 import app from '../app';
 import { AuthService } from '../services/auth.service';
+import { generateToken } from '../utils/jwt.utils';
 
 describe('Auth API Integration Tests (/api/auth)', () => {
   beforeEach(() => {
+    process.env.JWT_SECRET = 'api_integration_test_secret_12345';
     jest.clearAllMocks();
   });
 
@@ -118,6 +120,53 @@ describe('Auth API Integration Tests (/api/auth)', () => {
       expect(res.status).toBe(401);
       expect(res.body.success).toBe(false);
       expect(res.body.message).toContain('Invalid email or password');
+    });
+  });
+
+  describe('GET /api/auth/me (Protected Route)', () => {
+    it('should allow access and return user payload when valid JWT is provided', async () => {
+      const token = generateToken({ userId: 'user_999', role: 'customer' });
+
+      const res = await request(app)
+        .get('/api/auth/me')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.user.userId).toBe('user_999');
+    });
+
+    it('should reject access (401 Unauthorized) when token is missing', async () => {
+      const res = await request(app).get('/api/auth/me');
+
+      expect(res.status).toBe(401);
+      expect(res.body.success).toBe(false);
+    });
+  });
+
+  describe('GET /api/auth/admin-only (Admin Protected Route)', () => {
+    it('should allow access for admin user (200 OK)', async () => {
+      const adminToken = generateToken({ userId: 'admin_1', role: 'admin' });
+
+      const res = await request(app)
+        .get('/api/auth/admin-only')
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.message).toContain('Welcome Admin');
+    });
+
+    it('should deny access for non-admin user (403 Forbidden)', async () => {
+      const customerToken = generateToken({ userId: 'customer_1', role: 'customer' });
+
+      const res = await request(app)
+        .get('/api/auth/admin-only')
+        .set('Authorization', `Bearer ${customerToken}`);
+
+      expect(res.status).toBe(403);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toContain('Admin rights required');
     });
   });
 });

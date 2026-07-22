@@ -72,11 +72,14 @@ Full-stack authentication system built using Repository → Service → Controll
 ### Endpoints
 - `POST /api/auth/register` - Register a new user (`name`, `email`, `password`, `role`)
 - `POST /api/auth/login` - Authenticate user and receive JWT token (`email`, `password`)
+- `GET /api/auth/me` - Protected endpoint returning authenticated user payload (`Bearer <token>`)
+- `GET /api/auth/admin-only` - Protected admin-only endpoint (`Bearer <token>`, role: `admin`)
 
 ### Features & Security
 - **Password Hashing**: Automatic pre-save bcrypt salt & hashing in Mongoose User model (`backend/src/models/user.model.ts`).
 - **Duplicate Email Prevention**: Instant lookup & validation rejecting existing email registrations.
-- **JWT Authorization**: Utility for signing and verifying tokens (`backend/src/utils/jwt.utils.ts`).
+- **JWT Authentication Middleware**: `authenticate` middleware (`backend/src/middlewares/auth.middleware.ts`) validates Bearer tokens and populates `req.user`.
+- **Role-Based Authorization & Admin Middleware**: `authorize(...roles)` and `requireAdmin` middlewares enforce RBAC and return `403 Forbidden` for unauthorized roles.
 - **Input Validation**: Dedicated validator middlewares (`backend/src/validators/auth.validator.ts`).
 - **Centralized Error Handling**: Standardized JSON error responses (`backend/src/middlewares/error.middleware.ts`).
 
@@ -87,5 +90,6 @@ Full-stack authentication system built using Repository → Service → Controll
 ## Running Tests
 - Backend tests: `npm test` (from `backend/` directory)
 - Frontend tests: `npm test` (from `frontend/` directory)
+
 
 

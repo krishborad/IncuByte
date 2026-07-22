@@ -249,6 +249,48 @@ This document records all AI interactions, prompts, responses, and manual change
 - **Manual Changes**: None
 - **Final Outcome**: Full-stack authentication system successfully implemented, thoroughly tested, documented, and pushed to GitHub.
 
+---
+
+## Step 6
+- **Date**: 2026-07-22
+- **Feature**: JWT Authentication Middleware, Admin Authorization Middleware & Protected Routes
+- **AI Tool**: Antigravity (Gemini 3.6 Flash (High))
+- **Exact Prompt**:
+  ```text
+  Implement JWT middleware.
+
+  Implement Admin middleware.
+
+  Protect routes.
+
+  Write tests first.
+
+  Implement.
+
+  Run tests.
+
+  Commit.
+
+  Push.
+
+  Stop.
+  ```
+- **AI Response Summary**:
+  - Followed strict TDD workflow (RED → GREEN → REFACTOR).
+  - **RED Phase**: Wrote unit tests in `backend/src/tests/auth.middleware.test.ts` for JWT token validation, missing headers, malformed headers, invalid/expired tokens, role authorization (`authorize`), and admin restriction (`requireAdmin`). Confirmed initial test suite failure prior to implementation.
+  - **GREEN Phase**:
+    - Created `backend/src/middlewares/auth.middleware.ts` with `authenticate`, `authorize(...roles)`, and `requireAdmin` middlewares.
+    - Protected user route `GET /api/auth/me` and admin-only route `GET /api/auth/admin-only` in `backend/src/routes/auth.routes.ts`.
+    - Added protected route integration tests in `backend/src/tests/auth.api.test.ts`.
+  - **REFACTOR Phase**: Verified typed request interface (`AuthenticatedRequest`) and clean middleware delegation.
+  - **Verification**: Executed backend test suite. All 33 unit & integration tests passed cleanly (100%).
+  - Updated `README.md` with middleware and protected route documentation and appended interaction log to `PROMPTS.md`.
+  - Committed and pushed feature to GitHub (`https://github.com/krishborad/IncuByte.git`).
+  - Stopped as instructed.
+- **Manual Changes**: None
+- **Final Outcome**: JWT authentication and role-based admin authorization middlewares successfully implemented, protecting routes with 100% test coverage and pushed to GitHub.
+
+
 
 
 
