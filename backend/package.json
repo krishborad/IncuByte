@@ -2,11 +2,11 @@
   "name": "car-dealership-backend",
   "version": "1.0.0",
   "description": "Backend for Car Dealership Inventory System",
-  "main": "dist/app.js",
+  "main": "dist/server.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/app.js",
-    "dev": "nodemon --watch src --ext ts --exec ts-node src/app.ts",
+    "start": "node dist/server.js",
+    "dev": "nodemon --watch src --ext ts --exec ts-node src/server.ts",
     "test": "jest --runInBand --detectOpenHandles"
   },
   "dependencies": {
