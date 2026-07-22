@@ -89,7 +89,9 @@ Full-stack authentication system built using Repository → Service → Controll
 - `POST /api/vehicles` - Add a new vehicle to dealership inventory (**Admin Only**, Requires `Bearer <token>` with `role: 'admin'`)
 - `PUT /api/vehicles/:id` - Update an existing vehicle (**Admin Only**, Requires `Bearer <token>` with `role: 'admin'`)
 - `DELETE /api/vehicles/:id` - Soft delete an existing vehicle (**Admin Only**, Requires `Bearer <token>` with `role: 'admin'`)
+- `POST /api/vehicles/:id/purchase` - Purchase a vehicle and atomically decrease stock (**Authenticated Route**, Requires `Bearer <token>`)
 - `GET /api/vehicles` - Fetch paginated, filtered, and sorted list of active vehicles (**Public Route**)
+
 
   - **Query Parameters**:
     - `search` / `q`: Global search keyword (case-insensitive `$or` search across `make`, `model`, and `description`)

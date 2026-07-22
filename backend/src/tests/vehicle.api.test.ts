@@ -243,4 +243,65 @@ describe('Vehicle API Integration Tests (GET, POST, PUT, DELETE /api/vehicles)',
       expect(res.body.message).toContain('Vehicle not found');
     });
   });
+
+  describe('POST /api/vehicles/:id/purchase (Protected Purchase Route)', () => {
+    const vehicleId = '507f1f77bcf86cd799439099';
+
+    it('should allow authenticated customer to purchase a vehicle and decrease stock (200 OK)', async () => {
+      const mockPurchasedVehicle = {
+        _id: vehicleId,
+        ...validVehiclePayload,
+        stock: 1,
+      };
+
+      jest.spyOn(VehicleService.prototype, 'purchaseVehicle').mockResolvedValueOnce(mockPurchasedVehicle as any);
+
+      const res = await request(app)
+        .post(`/api/vehicles/${vehicleId}/purchase`)
+        .set('Authorization', `Bearer ${customerToken}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.message).toContain('Vehicle purchased successfully');
+      expect(res.body.data.stock).toBe(1);
+    });
+
+    it('should return 400 Bad Request when vehicle is out of stock', async () => {
+      const outOfStockError: any = new Error('Vehicle is out of stock');
+      outOfStockError.statusCode = 400;
+
+      jest.spyOn(VehicleService.prototype, 'purchaseVehicle').mockRejectedValueOnce(outOfStockError);
+
+      const res = await request(app)
+        .post(`/api/vehicles/${vehicleId}/purchase`)
+        .set('Authorization', `Bearer ${customerToken}`);
+
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toContain('Vehicle is out of stock');
+    });
+
+    it('should return 401 Unauthorized for unauthenticated purchase requests', async () => {
+      const res = await request(app)
+        .post(`/api/vehicles/${vehicleId}/purchase`);
+
+      expect(res.status).toBe(401);
+      expect(res.body.success).toBe(false);
+    });
+
+    it('should return 404 Not Found if vehicle to purchase does not exist', async () => {
+      const notFoundError: any = new Error('Vehicle not found');
+      notFoundError.statusCode = 404;
+
+      jest.spyOn(VehicleService.prototype, 'purchaseVehicle').mockRejectedValueOnce(notFoundError);
+
+      const res = await request(app)
+        .post('/api/vehicles/non_existent_id/purchase')
+        .set('Authorization', `Bearer ${customerToken}`);
+
+      expect(res.status).toBe(404);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toContain('Vehicle not found');
+    });
+  });
 });

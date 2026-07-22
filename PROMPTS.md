@@ -581,6 +581,53 @@ This document records all AI interactions, prompts, responses, and manual change
 - **Manual Changes**: None
 - **Final Outcome**: Delete Vehicle admin-protected soft delete endpoint successfully implemented with 100% test coverage and pushed to GitHub.
 
+---
+
+## Step 13
+- **Date**: 2026-07-22
+- **Feature**: Purchase Vehicle API Endpoint (Atomic Stock Decrease & Out-of-Stock Prevention)
+- **AI Tool**: Antigravity (Gemini 3.6 Flash (High))
+- **Exact Prompt**:
+  ```text
+  Implement Purchase endpoint.
+
+  Decrease stock.
+
+  Prevent negative inventory.
+
+  Return proper response.
+
+  Write tests first.
+
+  Implement.
+
+  Run tests.
+
+  Commit.
+
+  Push.
+
+  Stop.
+  ```
+- **AI Response Summary**:
+  - Followed strict TDD workflow (RED → GREEN → REFACTOR).
+  - **RED Phase**:
+    - Wrote unit tests in `backend/src/tests/vehicle.service.test.ts` for stock decrement, out-of-stock check (`400 Bad Request`), and vehicle not found (`404 Not Found`).
+    - Wrote integration tests in `backend/src/tests/vehicle.api.test.ts` for `POST /api/vehicles/:id/purchase` covering authenticated purchase (`200 OK`), out of stock (`400 Bad Request`), unauthenticated block (`401 Unauthorized`), and vehicle not found (`404 Not Found`). Verified test failure prior to implementation.
+  - **GREEN Phase**:
+    - Added `decreaseStock` in `VehicleRepository` (`backend/src/repositories/vehicle.repository.ts`) using atomic Mongo `$inc` and `stock: { $gte: quantity }` filter.
+    - Added `purchaseVehicle` method in `VehicleService` (`backend/src/services/vehicle.service.ts`) validating stock availability before and during atomic updates.
+    - Added `purchaseVehicle` controller method in `backend/src/controllers/vehicle.controller.ts`.
+    - Mounted `POST /:id/purchase` in `backend/src/routes/vehicle.routes.ts` protected by `authenticate` middleware.
+  - **REFACTOR Phase**: Ensured atomic update condition (`$gte`) to eliminate race condition vulnerabilities leading to negative inventory.
+  - **Verification**: Executed backend test suite. All 69 unit & integration tests passed cleanly (100%).
+  - Updated `README.md` with Purchase Vehicle endpoint documentation and appended interaction log to `PROMPTS.md`.
+  - Committed and pushed feature to GitHub (`https://github.com/krishborad/IncuByte.git`).
+  - Stopped as instructed.
+- **Manual Changes**: None
+- **Final Outcome**: Purchase Vehicle endpoint with atomic stock decrease and negative inventory protection successfully implemented with 100% test coverage and pushed to GitHub.
+
+
 
 
 

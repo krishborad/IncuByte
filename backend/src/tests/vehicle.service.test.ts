@@ -24,6 +24,7 @@ describe('VehicleService Unit Tests', () => {
       findAllWithPagination: jest.fn(),
       findById: jest.fn(),
       update: jest.fn(),
+      decreaseStock: jest.fn(),
       softDelete: jest.fn(),
       delete: jest.fn(),
     } as unknown as jest.Mocked<VehicleRepository>;
@@ -197,6 +198,47 @@ describe('VehicleService Unit Tests', () => {
       mockVehicleRepository.softDelete.mockResolvedValueOnce(null);
 
       await expect(vehicleService.deleteVehicle(vehicleId)).rejects.toThrow('Vehicle not found');
+    });
+  });
+
+  describe('purchaseVehicle', () => {
+    const vehicleId = '507f1f77bcf86cd799439022';
+
+    it('should successfully decrease stock by 1 upon purchase', async () => {
+      const purchasedVehicle = {
+        _id: vehicleId,
+        ...sampleVehicleData,
+        stock: 2,
+      } as any;
+
+      mockVehicleRepository.findById.mockResolvedValueOnce({
+        _id: vehicleId,
+        ...sampleVehicleData,
+        stock: 3,
+      } as any);
+
+      mockVehicleRepository.decreaseStock.mockResolvedValueOnce(purchasedVehicle);
+
+      const result = await vehicleService.purchaseVehicle(vehicleId);
+
+      expect(mockVehicleRepository.decreaseStock).toHaveBeenCalledWith(vehicleId, 1);
+      expect(result.stock).toBe(2);
+    });
+
+    it('should throw a 400 error when attempting to purchase an out of stock vehicle', async () => {
+      mockVehicleRepository.findById.mockResolvedValueOnce({
+        _id: vehicleId,
+        ...sampleVehicleData,
+        stock: 0,
+      } as any);
+
+      await expect(vehicleService.purchaseVehicle(vehicleId)).rejects.toThrow('Vehicle is out of stock');
+    });
+
+    it('should throw a 404 error when vehicle to purchase does not exist', async () => {
+      mockVehicleRepository.findById.mockResolvedValueOnce(null);
+
+      await expect(vehicleService.purchaseVehicle(vehicleId)).rejects.toThrow('Vehicle not found');
     });
   });
 });

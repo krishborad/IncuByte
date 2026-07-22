@@ -53,4 +53,17 @@ export class VehicleController {
       next(error);
     }
   };
+
+  purchaseVehicle = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const vehicle = await this.vehicleService.purchaseVehicle(req.params.id);
+      res.status(200).json({
+        success: true,
+        message: 'Vehicle purchased successfully',
+        data: vehicle,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }

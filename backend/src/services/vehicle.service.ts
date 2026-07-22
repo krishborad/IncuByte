@@ -126,4 +126,28 @@ export class VehicleService {
     }
     return deletedVehicle;
   }
+
+  async purchaseVehicle(id: string, quantity: number = 1): Promise<IVehicle> {
+    const existingVehicle = await this.vehicleRepository.findById(id);
+    if (!existingVehicle) {
+      const error: any = new Error('Vehicle not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (existingVehicle.stock < quantity) {
+      const error: any = new Error('Vehicle is out of stock');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const updatedVehicle = await this.vehicleRepository.decreaseStock(id, quantity);
+    if (!updatedVehicle) {
+      const error: any = new Error('Vehicle is out of stock');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    return updatedVehicle;
+  }
 }

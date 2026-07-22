@@ -9,6 +9,9 @@ const vehicleController = new VehicleController();
 // Public: Get all vehicles (with pagination, sorting, filtering)
 router.get('/', vehicleController.getVehicles);
 
+// Authenticated: Purchase a vehicle (decreases stock)
+router.post('/:id/purchase', authenticate, vehicleController.purchaseVehicle);
+
 // Admin only: Add a new vehicle
 router.post('/', authenticate, requireAdmin, validateVehicle, vehicleController.createVehicle);
 
