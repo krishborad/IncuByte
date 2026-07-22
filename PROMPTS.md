@@ -393,6 +393,53 @@ This document records all AI interactions, prompts, responses, and manual change
 - **Manual Changes**: None
 - **Final Outcome**: Add Vehicle admin-protected endpoint successfully implemented with 100% test coverage and pushed to GitHub.
 
+---
+
+## Step 9
+- **Date**: 2026-07-22
+- **Feature**: Get Vehicles API Endpoint with Pagination, Sorting & Filtering
+- **AI Tool**: Antigravity (Gemini 3.6 Flash (High))
+- **Exact Prompt**:
+  ```text
+  Create Get Vehicles endpoint.
+
+  Pagination.
+
+  Sorting.
+
+  Filtering.
+
+  Tests first.
+
+  Implement.
+
+  Run tests.
+
+  Commit.
+
+  Push.
+
+  Stop.
+  ```
+- **AI Response Summary**:
+  - Followed strict TDD workflow (RED → GREEN → REFACTOR).
+  - **RED Phase**:
+    - Wrote unit tests in `backend/src/tests/vehicle.service.test.ts` for paginated retrieval and filtering/sorting query options.
+    - Wrote integration tests in `backend/src/tests/vehicle.api.test.ts` for `GET /api/vehicles`. Verified test failure prior to implementation.
+  - **GREEN Phase**:
+    - VehicleRepository (`backend/src/repositories/vehicle.repository.ts`): Added `findAllWithPagination` method handling Mongoose `.skip()`, `.limit()`, `.sort()`, and `.countDocuments()`.
+    - VehicleService (`backend/src/services/vehicle.service.ts`): Implemented query parser building regex case-insensitive search (`make`, `model`), range filters (`minPrice`, `maxPrice`, `minYear`, `maxYear`), and enum filters (`fuelType`, `transmission`).
+    - VehicleController (`backend/src/controllers/vehicle.controller.ts`): Added `getVehicles` handler returning `{ success: true, data: { vehicles, pagination } }`.
+    - Vehicle Routes (`backend/src/routes/vehicle.routes.ts`): Added public `GET /` route.
+  - **REFACTOR Phase**: Cleaned up query type casting and default pagination options.
+  - **Verification**: Executed backend test suite. All 50 unit & integration tests passed cleanly (100%).
+  - Updated `README.md` with Get Vehicles query parameters specification and appended interaction log to `PROMPTS.md`.
+  - Committed and pushed feature to GitHub (`https://github.com/krishborad/IncuByte.git`).
+  - Stopped as instructed.
+- **Manual Changes**: None
+- **Final Outcome**: Get Vehicles endpoint with pagination, sorting, and multi-field filtering successfully implemented with 100% test coverage and pushed to GitHub.
+
+
 
 
 

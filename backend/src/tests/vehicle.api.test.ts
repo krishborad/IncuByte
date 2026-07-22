@@ -3,7 +3,7 @@ import app from '../app';
 import { VehicleService } from '../services/vehicle.service';
 import { generateToken } from '../utils/jwt.utils';
 
-describe('Vehicle API Integration Tests (POST /api/vehicles)', () => {
+describe('Vehicle API Integration Tests (GET & POST /api/vehicles)', () => {
   let adminToken: string;
   let customerToken: string;
 
@@ -30,74 +30,103 @@ describe('Vehicle API Integration Tests (POST /api/vehicles)', () => {
     jest.restoreAllMocks();
   });
 
-  it('should allow admin to create a new vehicle (201 Created)', async () => {
-    const mockCreatedVehicle = {
-      _id: '507f1f77bcf86cd799439099',
-      ...validVehiclePayload,
-      image: 'https://via.placeholder.com/600x400?text=Car+Image',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    jest.spyOn(VehicleService.prototype, 'createVehicle').mockResolvedValueOnce(mockCreatedVehicle as any);
-
-    const res = await request(app)
-      .post('/api/vehicles')
-      .set('Authorization', `Bearer ${adminToken}`)
-      .send(validVehiclePayload);
-
-    expect(res.status).toBe(201);
-    expect(res.body.success).toBe(true);
-    expect(res.body.data.make).toBe('BMW');
-    expect(res.body.data.model).toBe('M3');
-  });
-
-  it('should deny non-admin users with 403 Forbidden', async () => {
-    const res = await request(app)
-      .post('/api/vehicles')
-      .set('Authorization', `Bearer ${customerToken}`)
-      .send(validVehiclePayload);
-
-    expect(res.status).toBe(403);
-    expect(res.body.success).toBe(false);
-    expect(res.body.message).toContain('Admin rights required');
-  });
-
-  it('should deny unauthenticated requests with 401 Unauthorized', async () => {
-    const res = await request(app)
-      .post('/api/vehicles')
-      .send(validVehiclePayload);
-
-    expect(res.status).toBe(401);
-    expect(res.body.success).toBe(false);
-  });
-
-  it('should return 400 Bad Request when required vehicle fields are missing', async () => {
-    const res = await request(app)
-      .post('/api/vehicles')
-      .set('Authorization', `Bearer ${adminToken}`)
-      .send({
-        make: 'BMW',
-        // missing model, year, price, mileage, fuelType, transmission
-      });
-
-    expect(res.status).toBe(400);
-    expect(res.body.success).toBe(false);
-    expect(res.body.errors).toBeDefined();
-  });
-
-  it('should return 400 Bad Request for negative price or invalid fuelType', async () => {
-    const res = await request(app)
-      .post('/api/vehicles')
-      .set('Authorization', `Bearer ${adminToken}`)
-      .send({
+  describe('POST /api/vehicles', () => {
+    it('should allow admin to create a new vehicle (201 Created)', async () => {
+      const mockCreatedVehicle = {
+        _id: '507f1f77bcf86cd799439099',
         ...validVehiclePayload,
-        price: -100,
-        fuelType: 'InvalidFuel',
-      });
+        image: 'https://via.placeholder.com/600x400?text=Car+Image',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
 
-    expect(res.status).toBe(400);
-    expect(res.body.success).toBe(false);
-    expect(res.body.errors).toBeDefined();
+      jest.spyOn(VehicleService.prototype, 'createVehicle').mockResolvedValueOnce(mockCreatedVehicle as any);
+
+      const res = await request(app)
+        .post('/api/vehicles')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send(validVehiclePayload);
+
+      expect(res.status).toBe(201);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.make).toBe('BMW');
+      expect(res.body.data.model).toBe('M3');
+    });
+
+    it('should deny non-admin users with 403 Forbidden', async () => {
+      const res = await request(app)
+        .post('/api/vehicles')
+        .set('Authorization', `Bearer ${customerToken}`)
+        .send(validVehiclePayload);
+
+      expect(res.status).toBe(403);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toContain('Admin rights required');
+    });
+
+    it('should deny unauthenticated requests with 401 Unauthorized', async () => {
+      const res = await request(app)
+        .post('/api/vehicles')
+        .send(validVehiclePayload);
+
+      expect(res.status).toBe(401);
+      expect(res.body.success).toBe(false);
+    });
+
+    it('should return 400 Bad Request when required vehicle fields are missing', async () => {
+      const res = await request(app)
+        .post('/api/vehicles')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          make: 'BMW',
+        });
+
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.errors).toBeDefined();
+    });
+
+    it('should return 400 Bad Request for negative price or invalid fuelType', async () => {
+      const res = await request(app)
+        .post('/api/vehicles')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          ...validVehiclePayload,
+          price: -100,
+          fuelType: 'InvalidFuel',
+        });
+
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.errors).toBeDefined();
+    });
+  });
+
+  describe('GET /api/vehicles (Public Route - Search, Filter, Sort, Paginate)', () => {
+    it('should return 200 OK with paginated list of vehicles and pagination metadata', async () => {
+      const mockResult = {
+        vehicles: [
+          { _id: '1', make: 'Toyota', model: 'Camry', price: 28000, year: 2023 },
+          { _id: '2', make: 'Honda', model: 'Civic', price: 25000, year: 2024 },
+        ],
+        pagination: {
+          total: 2,
+          page: 1,
+          limit: 10,
+          totalPages: 1,
+        },
+      };
+
+      jest.spyOn(VehicleService.prototype, 'getVehicles').mockResolvedValueOnce(mockResult as any);
+
+      const res = await request(app)
+        .get('/api/vehicles?make=Toyota&page=1&limit=10&sortBy=price&sortOrder=asc');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.vehicles).toHaveLength(2);
+      expect(res.body.data.pagination).toBeDefined();
+      expect(res.body.data.pagination.page).toBe(1);
+    });
   });
 });

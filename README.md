@@ -87,6 +87,18 @@ Full-stack authentication system built using Repository → Service → Controll
 
 ### Endpoints
 - `POST /api/vehicles` - Add a new vehicle to dealership inventory (**Admin Only**, Requires `Bearer <token>` with `role: 'admin'`)
+- `GET /api/vehicles` - Fetch paginated, filtered, and sorted list of vehicles (**Public Route**)
+  - **Query Parameters**:
+    - `page` (default: 1): Page number
+    - `limit` (default: 10, max: 100): Results per page
+    - `sortBy` (default: `createdAt`): Field to sort by (`price`, `year`, `mileage`, `createdAt`)
+    - `sortOrder` (default: `desc`): `asc` or `desc`
+    - `make`: Filter by manufacturer (case-insensitive search)
+    - `model`: Filter by model name (case-insensitive search)
+    - `minPrice` / `maxPrice`: Numeric price range filter
+    - `minYear` / `maxYear`: Numeric manufacture year range filter
+    - `fuelType`: Exact fuel type match (`Gasoline`, `Diesel`, `Electric`, `Hybrid`, `Plug-in Hybrid`)
+    - `transmission`: Exact transmission match (`Automatic`, `Manual`, `CVT`, `Dual-Clutch`)
 
 ### Data Model & Validation
 The Vehicle schema (`backend/src/models/vehicle.model.ts`) defines the core data model for dealership inventory items with comprehensive validation constraints:
@@ -111,6 +123,7 @@ The Vehicle schema (`backend/src/models/vehicle.model.ts`) defines the core data
 ## Running Tests
 - Backend tests: `npm test` (from `backend/` directory)
 - Frontend tests: `npm test` (from `frontend/` directory)
+
 
 
 

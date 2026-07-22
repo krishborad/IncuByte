@@ -6,6 +6,9 @@ import { authenticate, requireAdmin } from '../middlewares/auth.middleware';
 const router = Router();
 const vehicleController = new VehicleController();
 
+// Public: Get all vehicles (with pagination, sorting, filtering)
+router.get('/', vehicleController.getVehicles);
+
 // Admin only: Add a new vehicle
 router.post('/', authenticate, requireAdmin, validateVehicle, vehicleController.createVehicle);
 

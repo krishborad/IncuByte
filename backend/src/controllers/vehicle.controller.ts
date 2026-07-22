@@ -16,4 +16,16 @@ export class VehicleController {
       next(error);
     }
   };
+
+  getVehicles = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const result = await this.vehicleService.getVehicles(req.query);
+      res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
