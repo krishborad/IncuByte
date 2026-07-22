@@ -290,6 +290,63 @@ This document records all AI interactions, prompts, responses, and manual change
 - **Manual Changes**: None
 - **Final Outcome**: JWT authentication and role-based admin authorization middlewares successfully implemented, protecting routes with 100% test coverage and pushed to GitHub.
 
+---
+
+## Step 7
+- **Date**: 2026-07-22
+- **Feature**: Vehicle Mongoose Schema & Data Model Validation
+- **AI Tool**: Antigravity (Gemini 3.6 Flash (High))
+- **Exact Prompt**:
+  ```text
+  Create Vehicle schema.
+
+  Fields
+
+  Make
+
+  Model
+
+  Year
+
+  Price
+
+  Mileage
+
+  Fuel Type
+
+  Transmission
+
+  Stock
+
+  Image
+
+  Description
+
+  Validation
+
+  Tests first.
+
+  Implement.
+
+  Commit.
+
+  Push.
+
+  Stop.
+  ```
+- **AI Response Summary**:
+  - Followed strict TDD workflow (RED → GREEN → REFACTOR).
+  - **RED Phase**: Created unit tests in `backend/src/tests/vehicle.model.test.ts` for complete valid vehicle instantiation, stock default value (1), required field validation checks, numeric boundary constraints (year, price, mileage, stock), and enum validation (`fuelType`, `transmission`). Verified initial test suite failure.
+  - **GREEN Phase**: Implemented `IVehicle` interface and `Vehicle` Mongoose model in `backend/src/models/vehicle.model.ts` with comprehensive validation rules.
+  - **REFACTOR Phase**: Resolved Mongoose `Document` property type collision with `model` field by decoupling `IVehicle` base interface and `IVehicleDocument` type extension.
+  - **Verification**: Executed test suites. All 40 unit & integration tests passed cleanly (100%).
+  - Updated `README.md` with Vehicle Data Model specification table and appended interaction log to `PROMPTS.md`.
+  - Committed and pushed feature to GitHub (`https://github.com/krishborad/IncuByte.git`).
+  - Stopped as instructed.
+- **Manual Changes**: None
+- **Final Outcome**: Vehicle Mongoose Schema and data validation model successfully implemented with 100% test coverage and pushed to GitHub.
+
+
 
 
 

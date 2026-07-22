@@ -83,6 +83,23 @@ Full-stack authentication system built using Repository → Service → Controll
 - **Input Validation**: Dedicated validator middlewares (`backend/src/validators/auth.validator.ts`).
 - **Centralized Error Handling**: Standardized JSON error responses (`backend/src/middlewares/error.middleware.ts`).
 
+## Vehicle Data Model
+
+The Vehicle schema (`backend/src/models/vehicle.model.ts`) defines the core data model for dealership inventory items with comprehensive validation constraints:
+
+| Field | Type | Validation Rules | Description |
+| :--- | :--- | :--- | :--- |
+| `make` | String | Required, Trimmed | Manufacturer (e.g. Toyota, Honda) |
+| `model` | String | Required, Trimmed | Vehicle model (e.g. Camry, Civic) |
+| `year` | Number | Required, Min: 1900, Max: Current Year + 1 | Model manufacture year |
+| `price` | Number | Required, Min: 0 | Listing price in USD |
+| `mileage` | Number | Required, Min: 0 | Odometer reading |
+| `fuelType` | String | Required, Enum: `Gasoline`, `Diesel`, `Electric`, `Hybrid`, `Plug-in Hybrid` | Fuel type |
+| `transmission` | String | Required, Enum: `Automatic`, `Manual`, `CVT`, `Dual-Clutch` | Transmission type |
+| `stock` | Number | Required, Min: 0, Default: 1 | Available inventory quantity |
+| `image` | String | Optional, Placeholder default | Primary image URL |
+| `description` | String | Optional, Trimmed | Additional vehicle details |
+
 ## Running the Application
 - Backend development server: `npm run dev` (from `backend/` directory)
 - Frontend development server: `npm run dev` (from `frontend/` directory)
@@ -90,6 +107,7 @@ Full-stack authentication system built using Repository → Service → Controll
 ## Running Tests
 - Backend tests: `npm test` (from `backend/` directory)
 - Frontend tests: `npm test` (from `frontend/` directory)
+
 
 
 
