@@ -892,6 +892,43 @@ This document records all AI interactions, prompts, responses, and manual change
 - **Manual Changes**: None
 - **Final Outcome**: Interactive purchase modal, stock validation, API integration, and RTL tests completed with 100% test pass rate and pushed to GitHub.
 
+---
+
+## Step 21
+- **Date**: 2026-07-22
+- **Feature**: Admin Dashboard with Statistics Cards, Inventory CRUD Table & RTL Integration Tests
+- **AI Tool**: Antigravity (Gemini 3.6 Flash (High))
+- **Exact Prompt**:
+  ```text
+  Admin dashboard.
+
+  CRUD operations.
+
+  Statistics.
+
+  Inventory table.
+
+  Frontend tests.
+
+  Commit.
+
+  Push.
+
+  Stop.
+  ```
+- **AI Response Summary**:
+  - **Admin Vehicle API Methods**: Added `createVehicle`, `updateVehicle`, `deleteVehicle`, and `restockVehicle` methods to `vehicleService` (`frontend/src/services/vehicle.service.ts`).
+  - **Statistics Summary Grid**: Built real-time statistics cards on `AdminDashboardPage` (`frontend/src/pages/AdminDashboardPage.tsx`) tracking Total Listings, Inventory Valuation ($), Out of Stock count, and Low Stock count.
+  - **Inventory Management Table**: Created management table displaying vehicle thumbnail, make/model, price, year, mileage, specs, stock badges, and action buttons (`Edit`, `Restock`, `Delete`).
+  - **CRUD & Restock Modals**: Integrated Create/Update Vehicle modal form with React Hook Form validation, Restock quantity modal, and Delete confirmation dialog.
+  - **RTL Testing**: Wrote integration tests in `frontend/src/tests/AdminDashboardPage.test.tsx`. All 102 workspace tests (75 backend, 27 frontend) passed cleanly (100%).
+  - Appended interaction log to `PROMPTS.md`.
+  - Committed and pushed feature to GitHub (`https://github.com/krishborad/IncuByte.git`).
+  - Stopped as instructed.
+- **Manual Changes**: None
+- **Final Outcome**: Admin Dashboard with full CRUD inventory management table, statistics overview, restock dialogs, and React Testing Library integration tests completed with 100% test pass rate and pushed to GitHub.
+
+
 
 
 
