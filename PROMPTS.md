@@ -750,6 +750,45 @@ This document records all AI interactions, prompts, responses, and manual change
 - **Manual Changes**: None
 - **Final Outcome**: Frontend architecture fully initialized with Routing, Axios API interceptors, Auth Context, Protected Route guards, Tailwind layout, and React Testing Library setup with 100% test coverage.
 
+---
+
+## Step 17
+- **Date**: 2026-07-22
+- **Feature**: Login & Register Pages with Client Validation, JWT Storage & RTL Testing
+- **AI Tool**: Antigravity (Gemini 3.6 Flash (High))
+- **Exact Prompt**:
+  ```text
+  Create Login page.
+
+  Register page.
+
+  Validation.
+
+  JWT storage.
+
+  Protected routing.
+
+  Frontend tests.
+
+  Commit.
+
+  Push.
+
+  Stop.
+  ```
+- **AI Response Summary**:
+  - **Auth Service**: Created `authService` in `frontend/src/services/auth.service.ts` connecting login, register, and getMe endpoints.
+  - **Login Page**: Built `LoginPage` (`frontend/src/pages/LoginPage.tsx`) with `React Hook Form` validation (email pattern, password minLength), loading states, and API error alert banners.
+  - **Register Page**: Built `RegisterPage` (`frontend/src/pages/RegisterPage.tsx`) with `React Hook Form` validation (name, email, password, role selection), loading states, and API error handling.
+  - **JWT Storage & Protection**: Automated JWT token & user state persistence in `localStorage`, linking seamlessly with `AuthContext` and protected route navigation.
+  - **RTL Testing**: Wrote unit and integration tests in `frontend/src/tests/LoginPage.test.tsx` and `frontend/src/tests/RegisterPage.test.tsx`. All 88 workspace tests (75 backend, 13 frontend) passed cleanly (100%).
+  - Appended interaction log to `PROMPTS.md`.
+  - Committed and pushed feature to GitHub (`https://github.com/krishborad/IncuByte.git`).
+  - Stopped as instructed.
+- **Manual Changes**: None
+- **Final Outcome**: Login and Register pages with React Hook Form validation, JWT storage, and React Testing Library integration tests fully implemented with 100% test pass rate and pushed to GitHub.
+
+
 
 
 
