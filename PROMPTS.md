@@ -857,6 +857,42 @@ This document records all AI interactions, prompts, responses, and manual change
 - **Manual Changes**: None
 - **Final Outcome**: Frontend global search bar, multi-attribute filters, sorting, and pagination controls fully implemented with 100% test coverage and pushed to GitHub.
 
+---
+
+## Step 20
+- **Date**: 2026-07-22
+- **Feature**: Interactive Purchase Confirmation Modal, Stock Decrement & RTL Integration Tests
+- **AI Tool**: Antigravity (Gemini 3.6 Flash (High))
+- **Exact Prompt**:
+  ```text
+  Purchase button.
+
+  Confirmation.
+
+  Disable if stock zero.
+
+  API integration.
+
+  Tests.
+
+  Commit.
+
+  Push.
+
+  Stop.
+  ```
+- **AI Response Summary**:
+  - **Purchase Confirmation Modal**: Built glassmorphism confirmation dialog (`frontend/src/components/VehicleCard.tsx`) prompting user for purchase confirmation with vehicle details, price, and stock count.
+  - **Stock & Disabled States**: Enforced button disabled state when `stock === 0` or when user is unauthenticated.
+  - **API Integration**: Connected modal confirmation to `vehicleService.purchaseVehicle(id)` (`POST /api/vehicles/:id/purchase`), displaying a success toast notification upon successful purchase.
+  - **RTL Testing**: Updated unit & modal tests in `frontend/src/tests/VehicleCard.test.tsx`. All 97 workspace tests (75 backend, 22 frontend) passed cleanly (100%).
+  - Appended interaction log to `PROMPTS.md`.
+  - Committed and pushed feature to GitHub (`https://github.com/krishborad/IncuByte.git`).
+  - Stopped as instructed.
+- **Manual Changes**: None
+- **Final Outcome**: Interactive purchase modal, stock validation, API integration, and RTL tests completed with 100% test pass rate and pushed to GitHub.
+
+
 
 
 
