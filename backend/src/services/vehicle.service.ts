@@ -116,4 +116,14 @@ export class VehicleService {
     }
     return updatedVehicle;
   }
+
+  async deleteVehicle(id: string): Promise<IVehicle> {
+    const deletedVehicle = await this.vehicleRepository.softDelete(id);
+    if (!deletedVehicle) {
+      const error: any = new Error('Vehicle not found');
+      error.statusCode = 404;
+      throw error;
+    }
+    return deletedVehicle;
+  }
 }

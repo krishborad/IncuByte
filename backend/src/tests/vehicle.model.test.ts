@@ -27,14 +27,16 @@ describe('Vehicle Model Unit Tests', () => {
     expect(vehicle.fuelType).toBe('Hybrid');
     expect(vehicle.transmission).toBe('Automatic');
     expect(vehicle.stock).toBe(5);
+    expect(vehicle.isDeleted).toBe(false);
   });
 
-  it('should default stock to 1 if not provided', () => {
+  it('should default stock to 1 and isDeleted to false if not provided', () => {
     const dataWithoutStock = { ...validVehicleData };
     delete (dataWithoutStock as any).stock;
 
     const vehicle = new Vehicle(dataWithoutStock);
     expect(vehicle.stock).toBe(1);
+    expect(vehicle.isDeleted).toBe(false);
   });
 
   it('should invalidate vehicle when required fields are missing', () => {

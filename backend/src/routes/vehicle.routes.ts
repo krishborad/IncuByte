@@ -15,4 +15,7 @@ router.post('/', authenticate, requireAdmin, validateVehicle, vehicleController.
 // Admin only: Update an existing vehicle
 router.put('/:id', authenticate, requireAdmin, validateVehicleUpdate, vehicleController.updateVehicle);
 
+// Admin only: Soft delete an existing vehicle
+router.delete('/:id', authenticate, requireAdmin, vehicleController.deleteVehicle);
+
 export default router;

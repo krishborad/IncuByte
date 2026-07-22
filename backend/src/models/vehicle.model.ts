@@ -1,4 +1,4 @@
-import { Schema, model, Document } from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose';
 
 export type FuelType = 'Gasoline' | 'Diesel' | 'Electric' | 'Hybrid' | 'Plug-in Hybrid';
 export type TransmissionType = 'Automatic' | 'Manual' | 'CVT' | 'Dual-Clutch';
@@ -14,6 +14,7 @@ export interface IVehicle {
   stock: number;
   image?: string;
   description?: string;
+  isDeleted?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -22,37 +23,37 @@ export type IVehicleDocument = IVehicle & Document;
 
 const currentYear = new Date().getFullYear();
 
-const VehicleSchema = new Schema<IVehicle>(
+const VehicleSchema: Schema = new Schema(
   {
     make: {
       type: String,
-      required: [true, 'Make is required'],
+      required: [true, 'Vehicle make is required'],
       trim: true,
     },
     model: {
       type: String,
-      required: [true, 'Model is required'],
+      required: [true, 'Vehicle model is required'],
       trim: true,
     },
     year: {
       type: Number,
-      required: [true, 'Year is required'],
-      min: [1900, 'Year must be 1900 or later'],
+      required: [true, 'Vehicle manufacture year is required'],
+      min: [1900, 'Year must be after 1900'],
       max: [currentYear + 1, `Year cannot exceed ${currentYear + 1}`],
     },
     price: {
       type: Number,
-      required: [true, 'Price is required'],
+      required: [true, 'Vehicle price is required'],
       min: [0, 'Price must be non-negative'],
     },
     mileage: {
       type: Number,
-      required: [true, 'Mileage is required'],
+      required: [true, 'Vehicle mileage is required'],
       min: [0, 'Mileage must be non-negative'],
     },
     fuelType: {
       type: String,
-      required: [true, 'Fuel Type is required'],
+      required: [true, 'Vehicle fuel type is required'],
       enum: {
         values: ['Gasoline', 'Diesel', 'Electric', 'Hybrid', 'Plug-in Hybrid'],
         message: '{VALUE} is not a supported fuel type',
@@ -60,7 +61,7 @@ const VehicleSchema = new Schema<IVehicle>(
     },
     transmission: {
       type: String,
-      required: [true, 'Transmission is required'],
+      required: [true, 'Vehicle transmission is required'],
       enum: {
         values: ['Automatic', 'Manual', 'CVT', 'Dual-Clutch'],
         message: '{VALUE} is not a supported transmission type',
@@ -68,19 +69,22 @@ const VehicleSchema = new Schema<IVehicle>(
     },
     stock: {
       type: Number,
-      required: [true, 'Stock quantity is required'],
+      required: [true, 'Vehicle stock quantity is required'],
       min: [0, 'Stock cannot be negative'],
       default: 1,
     },
     image: {
       type: String,
       default: 'https://via.placeholder.com/600x400?text=Car+Image',
-      trim: true,
     },
     description: {
       type: String,
       trim: true,
-      default: '',
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+      index: true,
     },
   },
   {
@@ -88,4 +92,4 @@ const VehicleSchema = new Schema<IVehicle>(
   },
 );
 
-export const Vehicle = model<IVehicle>('Vehicle', VehicleSchema);
+export const Vehicle = mongoose.model<IVehicleDocument>('Vehicle', VehicleSchema);

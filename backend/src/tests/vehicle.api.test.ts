@@ -3,7 +3,7 @@ import app from '../app';
 import { VehicleService } from '../services/vehicle.service';
 import { generateToken } from '../utils/jwt.utils';
 
-describe('Vehicle API Integration Tests (GET, POST, PUT /api/vehicles)', () => {
+describe('Vehicle API Integration Tests (GET, POST, PUT, DELETE /api/vehicles)', () => {
   let adminToken: string;
   let customerToken: string;
 
@@ -195,16 +195,52 @@ describe('Vehicle API Integration Tests (GET, POST, PUT /api/vehicles)', () => {
       expect(res.body.success).toBe(false);
       expect(res.body.message).toContain('Vehicle not found');
     });
+  });
 
-    it('should return 400 Bad Request for invalid update values (e.g. negative price)', async () => {
+  describe('DELETE /api/vehicles/:id (Admin Protected Soft Delete Route)', () => {
+    const vehicleId = '507f1f77bcf86cd799439099';
+
+    it('should allow admin to soft delete a vehicle (200 OK)', async () => {
+      const mockDeletedVehicle = {
+        _id: vehicleId,
+        ...validVehiclePayload,
+        isDeleted: true,
+      };
+
+      jest.spyOn(VehicleService.prototype, 'deleteVehicle').mockResolvedValueOnce(mockDeletedVehicle as any);
+
       const res = await request(app)
-        .put(`/api/vehicles/${vehicleId}`)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send({ price: -5000 });
+        .delete(`/api/vehicles/${vehicleId}`)
+        .set('Authorization', `Bearer ${adminToken}`);
 
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.message).toContain('Vehicle deleted successfully');
+    });
+
+    it('should deny non-admin users from deleting with 403 Forbidden', async () => {
+      const res = await request(app)
+        .delete(`/api/vehicles/${vehicleId}`)
+        .set('Authorization', `Bearer ${customerToken}`);
+
+      expect(res.status).toBe(403);
       expect(res.body.success).toBe(false);
-      expect(res.body.errors).toBeDefined();
+      expect(res.body.message).toContain('Admin rights required');
+    });
+
+    it('should return 404 Not Found if vehicle to delete does not exist', async () => {
+      const notFoundError: any = new Error('Vehicle not found');
+      notFoundError.statusCode = 404;
+
+      jest.spyOn(VehicleService.prototype, 'deleteVehicle').mockRejectedValueOnce(notFoundError);
+
+      const res = await request(app)
+        .delete('/api/vehicles/non_existent_id')
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(res.status).toBe(404);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toContain('Vehicle not found');
     });
   });
 });

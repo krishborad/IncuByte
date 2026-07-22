@@ -24,6 +24,7 @@ describe('VehicleService Unit Tests', () => {
       findAllWithPagination: jest.fn(),
       findById: jest.fn(),
       update: jest.fn(),
+      softDelete: jest.fn(),
       delete: jest.fn(),
     } as unknown as jest.Mocked<VehicleRepository>;
 
@@ -170,6 +171,32 @@ describe('VehicleService Unit Tests', () => {
       mockVehicleRepository.update.mockResolvedValueOnce(null);
 
       await expect(vehicleService.updateVehicle(vehicleId, { price: 20000 })).rejects.toThrow('Vehicle not found');
+    });
+  });
+
+  describe('deleteVehicle', () => {
+    it('should soft delete and return the vehicle', async () => {
+      const vehicleId = '507f1f77bcf86cd799439022';
+      const deletedVehicle = {
+        _id: vehicleId,
+        ...sampleVehicleData,
+        isDeleted: true,
+      } as any;
+
+      mockVehicleRepository.softDelete.mockResolvedValueOnce(deletedVehicle);
+
+      const result = await vehicleService.deleteVehicle(vehicleId);
+
+      expect(mockVehicleRepository.softDelete).toHaveBeenCalledWith(vehicleId);
+      expect(result).toEqual(deletedVehicle);
+      expect(result.isDeleted).toBe(true);
+    });
+
+    it('should throw a 404 error if vehicle to delete is not found', async () => {
+      const vehicleId = 'non_existent_id';
+      mockVehicleRepository.softDelete.mockResolvedValueOnce(null);
+
+      await expect(vehicleService.deleteVehicle(vehicleId)).rejects.toThrow('Vehicle not found');
     });
   });
 });

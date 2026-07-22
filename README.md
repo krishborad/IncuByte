@@ -88,7 +88,8 @@ Full-stack authentication system built using Repository → Service → Controll
 ### Endpoints
 - `POST /api/vehicles` - Add a new vehicle to dealership inventory (**Admin Only**, Requires `Bearer <token>` with `role: 'admin'`)
 - `PUT /api/vehicles/:id` - Update an existing vehicle (**Admin Only**, Requires `Bearer <token>` with `role: 'admin'`)
-- `GET /api/vehicles` - Fetch paginated, filtered, and sorted list of vehicles (**Public Route**)
+- `DELETE /api/vehicles/:id` - Soft delete an existing vehicle (**Admin Only**, Requires `Bearer <token>` with `role: 'admin'`)
+- `GET /api/vehicles` - Fetch paginated, filtered, and sorted list of active vehicles (**Public Route**)
 
   - **Query Parameters**:
     - `search` / `q`: Global search keyword (case-insensitive `$or` search across `make`, `model`, and `description`)
@@ -119,6 +120,8 @@ The Vehicle schema (`backend/src/models/vehicle.model.ts`) defines the core data
 | `stock` | Number | Required, Min: 0, Default: 1 | Available inventory quantity |
 | `image` | String | Optional, Placeholder default | Primary image URL |
 | `description` | String | Optional, Trimmed | Additional vehicle details |
+| `isDeleted` | Boolean | Default: `false`, Indexed | Soft delete state flag |
+
 
 ## Running the Application
 - Backend development server: `npm run dev` (from `backend/` directory)

@@ -41,4 +41,16 @@ export class VehicleController {
       next(error);
     }
   };
+
+  deleteVehicle = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      await this.vehicleService.deleteVehicle(req.params.id);
+      res.status(200).json({
+        success: true,
+        message: 'Vehicle deleted successfully',
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
