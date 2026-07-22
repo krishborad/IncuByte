@@ -128,5 +128,20 @@ describe('Vehicle API Integration Tests (GET & POST /api/vehicles)', () => {
       expect(res.body.data.pagination).toBeDefined();
       expect(res.body.data.pagination.page).toBe(1);
     });
+
+    it('should support searching vehicles by search keyword across attributes', async () => {
+      const mockSearchResult = {
+        vehicles: [{ _id: '1', make: 'BMW', model: 'M3', description: 'Sports sedan' }],
+        pagination: { total: 1, page: 1, limit: 10, totalPages: 1 },
+      };
+
+      const getVehiclesSpy = jest.spyOn(VehicleService.prototype, 'getVehicles').mockResolvedValueOnce(mockSearchResult as any);
+
+      const res = await request(app).get('/api/vehicles?search=sports');
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(getVehiclesSpy).toHaveBeenCalledWith(expect.objectContaining({ search: 'sports' }));
+    });
   });
 });

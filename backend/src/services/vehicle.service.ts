@@ -6,6 +6,8 @@ export interface VehicleQueryOptions {
   limit?: string | number;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
+  search?: string;
+  q?: string;
   make?: string;
   model?: string;
   minPrice?: string | number;
@@ -40,6 +42,16 @@ export class VehicleService {
     const sortOrder = query.sortOrder === 'asc' ? 'asc' : 'desc';
 
     const filter: Record<string, any> = {};
+
+    const searchTerm = query.search || query.q;
+    if (searchTerm && typeof searchTerm === 'string' && searchTerm.trim().length > 0) {
+      const searchRegex = { $regex: searchTerm.trim(), $options: 'i' };
+      filter.$or = [
+        { make: searchRegex },
+        { model: searchRegex },
+        { description: searchRegex },
+      ];
+    }
 
     if (query.make) {
       filter.make = { $regex: query.make, $options: 'i' };

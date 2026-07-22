@@ -57,7 +57,7 @@ describe('VehicleService Unit Tests', () => {
     });
   });
 
-  describe('getVehicles', () => {
+  describe('getVehicles (Searching, Filtering & Pagination)', () => {
     it('should return paginated vehicle list and metadata with default page and limit', async () => {
       const mockVehicles = [
         { _id: '1', make: 'Toyota', model: 'Camry', price: 28000 },
@@ -118,6 +118,29 @@ describe('VehicleService Unit Tests', () => {
           sortBy: 'price',
           sortOrder: 'asc',
         },
+      );
+    });
+
+    it('should construct multi-field $or search filter when global search term is provided', async () => {
+      mockVehicleRepository.findAllWithPagination.mockResolvedValueOnce({
+        vehicles: [],
+        total: 0,
+        page: 1,
+        limit: 10,
+        totalPages: 0,
+      });
+
+      await vehicleService.getVehicles({ search: 'sedan' });
+
+      expect(mockVehicleRepository.findAllWithPagination).toHaveBeenCalledWith(
+        expect.objectContaining({
+          $or: [
+            { make: { $regex: 'sedan', $options: 'i' } },
+            { model: { $regex: 'sedan', $options: 'i' } },
+            { description: { $regex: 'sedan', $options: 'i' } },
+          ],
+        }),
+        expect.anything(),
       );
     });
   });

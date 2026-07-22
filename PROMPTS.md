@@ -439,6 +439,59 @@ This document records all AI interactions, prompts, responses, and manual change
 - **Manual Changes**: None
 - **Final Outcome**: Get Vehicles endpoint with pagination, sorting, and multi-field filtering successfully implemented with 100% test coverage and pushed to GitHub.
 
+---
+
+## Step 10
+- **Date**: 2026-07-22
+- **Feature**: Multi-Attribute & Global Keyword Searching (Make, Model, Price, Year, Fuel, Transmission & Pagination)
+- **AI Tool**: Antigravity (Gemini 3.6 Flash (High))
+- **Exact Prompt**:
+  ```text
+  Implement searching.
+
+  Make
+
+  Model
+
+  Price
+
+  Year
+
+  Fuel
+
+  Transmission
+
+  Pagination
+
+  Tests first.
+
+  Implement.
+
+  Run tests.
+
+  Commit.
+
+  Push.
+
+  Stop.
+  ```
+- **AI Response Summary**:
+  - Followed strict TDD workflow (RED → GREEN → REFACTOR).
+  - **RED Phase**:
+    - Wrote unit tests in `backend/src/tests/vehicle.service.test.ts` for multi-field `$or` global keyword search filter construction.
+    - Wrote integration tests in `backend/src/tests/vehicle.api.test.ts` for `GET /api/vehicles?search=...`. Verified test failure prior to implementation.
+  - **GREEN Phase**:
+    - Updated `VehicleQueryOptions` interface to include `search` and `q` query parameters.
+    - Enhanced `VehicleService.getVehicles` (`backend/src/services/vehicle.service.ts`) to build a combined Mongo query with multi-attribute case-insensitive `$or` regex searching across `make`, `model`, and `description` alongside specific filters (`make`, `model`, `minPrice`, `maxPrice`, `minYear`, `maxYear`, `fuelType`, `transmission`) and pagination metadata.
+  - **REFACTOR Phase**: Ensured smooth combination of global search terms with attribute-specific filters and pagination limits.
+  - **Verification**: Executed backend test suite. All 52 unit & integration tests passed cleanly (100%).
+  - Updated `README.md` with search query parameter specification and appended interaction log to `PROMPTS.md`.
+  - Committed and pushed feature to GitHub (`https://github.com/krishborad/IncuByte.git`).
+  - Stopped as instructed.
+- **Manual Changes**: None
+- **Final Outcome**: Vehicle search feature across Make, Model, Price, Year, Fuel, Transmission, and Description with pagination successfully implemented with 100% test coverage and pushed to GitHub.
+
+
 
 
 
