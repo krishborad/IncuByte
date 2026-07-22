@@ -25,6 +25,7 @@ describe('VehicleService Unit Tests', () => {
       findById: jest.fn(),
       update: jest.fn(),
       decreaseStock: jest.fn(),
+      increaseStock: jest.fn(),
       softDelete: jest.fn(),
       delete: jest.fn(),
     } as unknown as jest.Mocked<VehicleRepository>;
@@ -239,6 +240,42 @@ describe('VehicleService Unit Tests', () => {
       mockVehicleRepository.findById.mockResolvedValueOnce(null);
 
       await expect(vehicleService.purchaseVehicle(vehicleId)).rejects.toThrow('Vehicle not found');
+    });
+  });
+
+  describe('restockVehicle', () => {
+    const vehicleId = '507f1f77bcf86cd799439022';
+
+    it('should successfully increase stock by specified quantity', async () => {
+      const restockedVehicle = {
+        _id: vehicleId,
+        ...sampleVehicleData,
+        stock: 8,
+      } as any;
+
+      mockVehicleRepository.findById.mockResolvedValueOnce({
+        _id: vehicleId,
+        ...sampleVehicleData,
+        stock: 3,
+      } as any);
+
+      mockVehicleRepository.increaseStock.mockResolvedValueOnce(restockedVehicle);
+
+      const result = await vehicleService.restockVehicle(vehicleId, 5);
+
+      expect(mockVehicleRepository.increaseStock).toHaveBeenCalledWith(vehicleId, 5);
+      expect(result.stock).toBe(8);
+    });
+
+    it('should throw a 400 error for non-positive restock quantity', async () => {
+      await expect(vehicleService.restockVehicle(vehicleId, 0)).rejects.toThrow('Restock quantity must be a positive integer');
+      await expect(vehicleService.restockVehicle(vehicleId, -3)).rejects.toThrow('Restock quantity must be a positive integer');
+    });
+
+    it('should throw a 404 error when vehicle to restock does not exist', async () => {
+      mockVehicleRepository.findById.mockResolvedValueOnce(null);
+
+      await expect(vehicleService.restockVehicle(vehicleId, 5)).rejects.toThrow('Vehicle not found');
     });
   });
 });

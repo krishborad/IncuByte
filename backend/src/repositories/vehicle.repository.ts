@@ -66,6 +66,14 @@ export class VehicleRepository {
     ).exec();
   }
 
+  async increaseStock(id: string, quantity: number): Promise<IVehicle | null> {
+    return Vehicle.findOneAndUpdate(
+      { _id: id, isDeleted: { $ne: true } },
+      { $inc: { stock: quantity } },
+      { new: true },
+    ).exec();
+  }
+
   async softDelete(id: string): Promise<IVehicle | null> {
     return Vehicle.findOneAndUpdate(
       { _id: id, isDeleted: { $ne: true } },

@@ -12,6 +12,9 @@ router.get('/', vehicleController.getVehicles);
 // Authenticated: Purchase a vehicle (decreases stock)
 router.post('/:id/purchase', authenticate, vehicleController.purchaseVehicle);
 
+// Admin only: Restock vehicle inventory (increases stock)
+router.post('/:id/restock', authenticate, requireAdmin, vehicleController.restockVehicle);
+
 // Admin only: Add a new vehicle
 router.post('/', authenticate, requireAdmin, validateVehicle, vehicleController.createVehicle);
 

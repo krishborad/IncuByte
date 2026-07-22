@@ -304,4 +304,55 @@ describe('Vehicle API Integration Tests (GET, POST, PUT, DELETE /api/vehicles)',
       expect(res.body.message).toContain('Vehicle not found');
     });
   });
+
+  describe('POST /api/vehicles/:id/restock (Admin Protected Restock Route)', () => {
+    const vehicleId = '507f1f77bcf86cd799439099';
+
+    it('should allow admin to restock a vehicle and increase inventory (200 OK)', async () => {
+      const mockRestockedVehicle = {
+        _id: vehicleId,
+        ...validVehiclePayload,
+        stock: 12,
+      };
+
+      jest.spyOn(VehicleService.prototype, 'restockVehicle').mockResolvedValueOnce(mockRestockedVehicle as any);
+
+      const res = await request(app)
+        .post(`/api/vehicles/${vehicleId}/restock`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ quantity: 10 });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.message).toContain('Vehicle restocked successfully');
+      expect(res.body.data.stock).toBe(12);
+    });
+
+    it('should deny non-admin users from restocking with 403 Forbidden', async () => {
+      const res = await request(app)
+        .post(`/api/vehicles/${vehicleId}/restock`)
+        .set('Authorization', `Bearer ${customerToken}`)
+        .send({ quantity: 5 });
+
+      expect(res.status).toBe(403);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toContain('Admin rights required');
+    });
+
+    it('should return 400 Bad Request for non-positive restock quantity', async () => {
+      const invalidQuantityError: any = new Error('Restock quantity must be a positive integer');
+      invalidQuantityError.statusCode = 400;
+
+      jest.spyOn(VehicleService.prototype, 'restockVehicle').mockRejectedValueOnce(invalidQuantityError);
+
+      const res = await request(app)
+        .post(`/api/vehicles/${vehicleId}/restock`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ quantity: -5 });
+
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toContain('Restock quantity must be a positive integer');
+    });
+  });
 });

@@ -150,4 +150,28 @@ export class VehicleService {
 
     return updatedVehicle;
   }
+
+  async restockVehicle(id: string, quantity: number): Promise<IVehicle> {
+    if (!quantity || typeof quantity !== 'number' || quantity <= 0) {
+      const error: any = new Error('Restock quantity must be a positive integer');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const existingVehicle = await this.vehicleRepository.findById(id);
+    if (!existingVehicle) {
+      const error: any = new Error('Vehicle not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const updatedVehicle = await this.vehicleRepository.increaseStock(id, quantity);
+    if (!updatedVehicle) {
+      const error: any = new Error('Vehicle not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    return updatedVehicle;
+  }
 }

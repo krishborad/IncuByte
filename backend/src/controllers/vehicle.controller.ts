@@ -66,4 +66,18 @@ export class VehicleController {
       next(error);
     }
   };
+
+  restockVehicle = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const quantity = Number(req.body.quantity);
+      const vehicle = await this.vehicleService.restockVehicle(req.params.id, quantity);
+      res.status(200).json({
+        success: true,
+        message: 'Vehicle restocked successfully',
+        data: vehicle,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }

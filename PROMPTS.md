@@ -627,6 +627,51 @@ This document records all AI interactions, prompts, responses, and manual change
 - **Manual Changes**: None
 - **Final Outcome**: Purchase Vehicle endpoint with atomic stock decrease and negative inventory protection successfully implemented with 100% test coverage and pushed to GitHub.
 
+---
+
+## Step 14
+- **Date**: 2026-07-22
+- **Feature**: Restock Vehicle API Endpoint (Admin Only & Inventory Increase)
+- **AI Tool**: Antigravity (Gemini 3.6 Flash (High))
+- **Exact Prompt**:
+  ```text
+  Implement Restock endpoint.
+
+  Admin only.
+
+  Increase inventory.
+
+  Tests first.
+
+  Implement.
+
+  Run tests.
+
+  Commit.
+
+  Push.
+
+  Stop.
+  ```
+- **AI Response Summary**:
+  - Followed strict TDD workflow (RED → GREEN → REFACTOR).
+  - **RED Phase**:
+    - Wrote unit tests in `backend/src/tests/vehicle.service.test.ts` for restocking inventory, non-positive quantity validation (`400 Bad Request`), and vehicle not found (`404 Not Found`).
+    - Wrote integration tests in `backend/src/tests/vehicle.api.test.ts` for `POST /api/vehicles/:id/restock` covering Admin restock (`200 OK`), non-admin block (`403 Forbidden`), and invalid restock quantity (`400 Bad Request`). Verified test failure prior to implementation.
+  - **GREEN Phase**:
+    - Added `increaseStock` in `VehicleRepository` (`backend/src/repositories/vehicle.repository.ts`) using atomic Mongo `$inc`.
+    - Added `restockVehicle` method in `VehicleService` (`backend/src/services/vehicle.service.ts`) enforcing positive quantity checks.
+    - Added `restockVehicle` controller method in `backend/src/controllers/vehicle.controller.ts`.
+    - Mounted `POST /:id/restock` in `backend/src/routes/vehicle.routes.ts` protected by `authenticate` and `requireAdmin` middlewares.
+  - **REFACTOR Phase**: Ensured atomic update handling and strict numerical validation on restock quantities.
+  - **Verification**: Executed backend test suite. All 75 unit & integration tests passed cleanly (100%).
+  - Updated `README.md` with Restock Vehicle endpoint documentation and appended interaction log to `PROMPTS.md`.
+  - Committed and pushed feature to GitHub (`https://github.com/krishborad/IncuByte.git`).
+  - Stopped as instructed.
+- **Manual Changes**: None
+- **Final Outcome**: Restock Vehicle admin-protected endpoint with inventory increment successfully implemented with 100% test coverage and pushed to GitHub.
+
+
 
 
 
