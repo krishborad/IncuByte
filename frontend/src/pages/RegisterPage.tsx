@@ -42,31 +42,33 @@ export const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto my-8">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl">
-        <div className="text-center mb-8">
+    <div className="max-w-md mx-auto my-8 px-4">
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+        <div className="text-center space-y-2">
           <h2 className="text-3xl font-extrabold text-white">Create Account</h2>
-          <p className="text-slate-400 text-sm mt-2">Join DriveHub to buy, search, and manage vehicles</p>
+          <p className="text-slate-400 text-sm">Join DriveHub to buy, search, and manage vehicles</p>
         </div>
 
         {apiError && (
-          <div className="mb-6 p-4 bg-rose-950/80 border border-rose-800 text-rose-300 rounded-xl text-sm" role="alert">
+          <div className="p-4 bg-rose-950/80 border border-rose-800 text-rose-300 rounded-xl text-sm" role="alert">
             {apiError}
           </div>
         )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate aria-busy={loading}>
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-2">
-              Full Name
+              Full Name *
             </label>
             <input
               id="name"
               type="text"
               autoComplete="name"
+              aria-required="true"
+              aria-invalid={!!errors.name}
               className={`w-full bg-slate-950 border ${
-                errors.name ? 'border-rose-500' : 'border-slate-800'
-              } text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors`}
+                errors.name ? 'border-rose-500 ring-1 ring-rose-500' : 'border-slate-800'
+              } text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors`}
               placeholder="Jane Doe"
               {...register('name', {
                 required: 'Full name is required',
@@ -76,20 +78,22 @@ export const RegisterPage: React.FC = () => {
                 },
               })}
             />
-            {errors.name && <p className="mt-1 text-xs text-rose-400">{errors.name.message}</p>}
+            {errors.name && <p className="mt-1 text-xs text-rose-400" role="alert">{errors.name.message}</p>}
           </div>
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
-              Email Address
+              Email Address *
             </label>
             <input
               id="email"
               type="email"
               autoComplete="email"
+              aria-required="true"
+              aria-invalid={!!errors.email}
               className={`w-full bg-slate-950 border ${
-                errors.email ? 'border-rose-500' : 'border-slate-800'
-              } text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors`}
+                errors.email ? 'border-rose-500 ring-1 ring-rose-500' : 'border-slate-800'
+              } text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors`}
               placeholder="you@example.com"
               {...register('email', {
                 required: 'Email is required',
@@ -99,20 +103,22 @@ export const RegisterPage: React.FC = () => {
                 },
               })}
             />
-            {errors.email && <p className="mt-1 text-xs text-rose-400">{errors.email.message}</p>}
+            {errors.email && <p className="mt-1 text-xs text-rose-400" role="alert">{errors.email.message}</p>}
           </div>
 
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">
-              Password
+              Password *
             </label>
             <input
               id="password"
               type="password"
               autoComplete="new-password"
+              aria-required="true"
+              aria-invalid={!!errors.password}
               className={`w-full bg-slate-950 border ${
-                errors.password ? 'border-rose-500' : 'border-slate-800'
-              } text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors`}
+                errors.password ? 'border-rose-500 ring-1 ring-rose-500' : 'border-slate-800'
+              } text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors`}
               placeholder="••••••••"
               {...register('password', {
                 required: 'Password is required',
@@ -122,16 +128,17 @@ export const RegisterPage: React.FC = () => {
                 },
               })}
             />
-            {errors.password && <p className="mt-1 text-xs text-rose-400">{errors.password.message}</p>}
+            {errors.password && <p className="mt-1 text-xs text-rose-400" role="alert">{errors.password.message}</p>}
           </div>
 
           <div>
             <label htmlFor="role" className="block text-sm font-medium text-slate-300 mb-2">
-              Account Type
+              Account Type *
             </label>
             <select
               id="role"
-              className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
+              aria-required="true"
+              className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
               {...register('role')}
             >
               <option value="customer">Customer (Buy & Browse Vehicles)</option>
@@ -144,11 +151,11 @@ export const RegisterPage: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg hover:shadow-indigo-500/25 flex items-center justify-center space-x-2"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-semibold py-3.5 px-4 rounded-xl transition-all shadow-lg hover:shadow-indigo-500/25 flex items-center justify-center space-x-2 min-h-[44px] focus:outline-none focus:ring-2 focus:ring-indigo-400"
           >
             {loading ? (
               <>
-                <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" aria-hidden="true">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path
                     className="opacity-75"
@@ -164,9 +171,9 @@ export const RegisterPage: React.FC = () => {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-slate-400">
+        <p className="text-center text-sm text-slate-400 pt-2">
           Already have an account?{' '}
-          <Link to="/login" className="text-indigo-400 hover:text-indigo-300 font-medium">
+          <Link to="/login" className="text-indigo-400 hover:text-indigo-300 font-medium focus:outline-none focus:underline">
             Sign in
           </Link>
         </p>

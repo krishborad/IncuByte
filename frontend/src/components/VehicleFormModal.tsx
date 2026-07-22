@@ -20,6 +20,7 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
 }) => {
   const currentYear = new Date().getFullYear();
   const [imagePreview, setImagePreview] = useState<string>('');
+  const [formSubmitError, setFormSubmitError] = useState<string | null>(null);
 
   const {
     register,
@@ -44,6 +45,7 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
   });
 
   useEffect(() => {
+    setFormSubmitError(null);
     if (initialData) {
       reset({
         make: initialData.make,
@@ -73,7 +75,7 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
       });
       setImagePreview('');
     }
-  }, [initialData, reset, currentYear]);
+  }, [initialData, reset, currentYear, isOpen]);
 
   const watchImageUrl = watch('image');
 
@@ -96,30 +98,49 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
     }
   };
 
+  const handleFormSubmit = async (data: CreateVehiclePayload) => {
+    setFormSubmitError(null);
+    try {
+      await onSubmit(data);
+    } catch (err: any) {
+      setFormSubmitError(err.response?.data?.message || 'Form submission failed. Please check inputs and try again.');
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="vehicle-modal-title"
       data-testid="vehicle-modal"
     >
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-xl w-full shadow-2xl my-8 space-y-6">
+      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-xl w-full shadow-2xl my-8 space-y-6 max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center border-b border-slate-800 pb-4">
-          <h3 className="text-2xl font-bold text-white">
+          <h3 id="vehicle-modal-title" className="text-2xl font-bold text-white">
             {initialData ? 'Edit Vehicle Details' : 'Add New Vehicle to Inventory'}
           </h3>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-1"
+            className="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            aria-label="Close modal"
             data-testid="modal-close-icon"
           >
             ✕
           </button>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+        {formSubmitError && (
+          <div className="p-4 bg-rose-950/90 border border-rose-800 text-rose-300 rounded-xl text-sm" role="alert">
+            {formSubmitError}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4" noValidate aria-busy={loading}>
           {/* Make & Model */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label htmlFor="form-make" className="block text-xs font-medium text-slate-300 mb-1">
                 Make *
@@ -127,13 +148,15 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
               <input
                 id="form-make"
                 type="text"
+                aria-invalid={!!errors.make}
+                aria-required="true"
                 className={`w-full bg-slate-950 border ${
-                  errors.make ? 'border-rose-500' : 'border-slate-800'
+                  errors.make ? 'border-rose-500 ring-1 ring-rose-500' : 'border-slate-800'
                 } text-white rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500`}
                 placeholder="e.g. Toyota"
                 {...register('make', { required: 'Make is required' })}
               />
-              {errors.make && <p className="text-xs text-rose-400 mt-1">{errors.make.message}</p>}
+              {errors.make && <p className="text-xs text-rose-400 mt-1" role="alert">{errors.make.message}</p>}
             </div>
 
             <div>
@@ -143,18 +166,20 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
               <input
                 id="form-model"
                 type="text"
+                aria-invalid={!!errors.model}
+                aria-required="true"
                 className={`w-full bg-slate-950 border ${
-                  errors.model ? 'border-rose-500' : 'border-slate-800'
+                  errors.model ? 'border-rose-500 ring-1 ring-rose-500' : 'border-slate-800'
                 } text-white rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500`}
                 placeholder="e.g. Camry"
                 {...register('model', { required: 'Model is required' })}
               />
-              {errors.model && <p className="text-xs text-rose-400 mt-1">{errors.model.message}</p>}
+              {errors.model && <p className="text-xs text-rose-400 mt-1" role="alert">{errors.model.message}</p>}
             </div>
           </div>
 
           {/* Year, Price, Stock */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label htmlFor="form-year" className="block text-xs font-medium text-slate-300 mb-1">
                 Year *
@@ -162,8 +187,10 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
               <input
                 id="form-year"
                 type="number"
+                aria-invalid={!!errors.year}
+                aria-required="true"
                 className={`w-full bg-slate-950 border ${
-                  errors.year ? 'border-rose-500' : 'border-slate-800'
+                  errors.year ? 'border-rose-500 ring-1 ring-rose-500' : 'border-slate-800'
                 } text-white rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500`}
                 {...register('year', {
                   valueAsNumber: true,
@@ -172,7 +199,7 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                   max: { value: currentYear + 1, message: `Year cannot exceed ${currentYear + 1}` },
                 })}
               />
-              {errors.year && <p className="text-xs text-rose-400 mt-1">{errors.year.message}</p>}
+              {errors.year && <p className="text-xs text-rose-400 mt-1" role="alert">{errors.year.message}</p>}
             </div>
 
             <div>
@@ -182,8 +209,10 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
               <input
                 id="form-price"
                 type="number"
+                aria-invalid={!!errors.price}
+                aria-required="true"
                 className={`w-full bg-slate-950 border ${
-                  errors.price ? 'border-rose-500' : 'border-slate-800'
+                  errors.price ? 'border-rose-500 ring-1 ring-rose-500' : 'border-slate-800'
                 } text-white rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500`}
                 {...register('price', {
                   valueAsNumber: true,
@@ -191,7 +220,7 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                   min: { value: 0, message: 'Price cannot be negative' },
                 })}
               />
-              {errors.price && <p className="text-xs text-rose-400 mt-1">{errors.price.message}</p>}
+              {errors.price && <p className="text-xs text-rose-400 mt-1" role="alert">{errors.price.message}</p>}
             </div>
 
             <div>
@@ -211,7 +240,7 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
           </div>
 
           {/* Mileage & Fuel Type */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label htmlFor="form-mileage" className="block text-xs font-medium text-slate-300 mb-1">
                 Mileage (mi) *
@@ -219,8 +248,10 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
               <input
                 id="form-mileage"
                 type="number"
+                aria-invalid={!!errors.mileage}
+                aria-required="true"
                 className={`w-full bg-slate-950 border ${
-                  errors.mileage ? 'border-rose-500' : 'border-slate-800'
+                  errors.mileage ? 'border-rose-500 ring-1 ring-rose-500' : 'border-slate-800'
                 } text-white rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500`}
                 {...register('mileage', {
                   valueAsNumber: true,
@@ -228,7 +259,7 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                   min: { value: 0, message: 'Mileage cannot be negative' },
                 })}
               />
-              {errors.mileage && <p className="text-xs text-rose-400 mt-1">{errors.mileage.message}</p>}
+              {errors.mileage && <p className="text-xs text-rose-400 mt-1" role="alert">{errors.mileage.message}</p>}
             </div>
 
             <div>
@@ -237,6 +268,7 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
               </label>
               <select
                 id="form-fuelType"
+                aria-required="true"
                 className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 {...register('fuelType', { required: 'Fuel type is required' })}
               >
@@ -256,6 +288,7 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
             </label>
             <select
               id="form-transmission"
+              aria-required="true"
               className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               {...register('transmission', { required: 'Transmission is required' })}
             >
@@ -273,12 +306,12 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
             </label>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
-              <div className="sm:col-span-2">
+              <div className="sm:col-span-2 space-y-2">
                 <input
                   id="form-image"
                   type="url"
                   placeholder="https://example.com/vehicle-image.jpg"
-                  className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-2"
+                  className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   {...register('image')}
                 />
                 <div className="flex items-center space-x-2">
@@ -287,6 +320,7 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                     type="file"
                     accept="image/*"
                     onChange={handleFileUpload}
+                    aria-label="Upload vehicle image file"
                     className="text-xs text-slate-400 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-950 file:text-indigo-300 hover:file:bg-indigo-900 cursor-pointer"
                     data-testid="file-upload-input"
                   />
@@ -298,7 +332,7 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
                 {imagePreview ? (
                   <img
                     src={imagePreview}
-                    alt="Preview"
+                    alt="Vehicle Preview"
                     className="w-full h-full object-cover"
                     data-testid="image-preview-img"
                   />
@@ -328,7 +362,7 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-3 rounded-xl transition-colors"
+              className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-3 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 min-h-[44px]"
               data-testid="form-cancel-btn"
             >
               Cancel
@@ -336,11 +370,17 @@ export const VehicleFormModal: React.FC<VehicleFormModalProps> = ({
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-semibold py-3 rounded-xl transition-colors shadow-lg shadow-indigo-500/25 flex items-center justify-center space-x-2"
+              className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-semibold py-3 rounded-xl transition-colors shadow-lg shadow-indigo-500/25 flex items-center justify-center space-x-2 min-h-[44px] focus:outline-none focus:ring-2 focus:ring-indigo-400"
               data-testid="form-submit-btn"
             >
               {loading ? (
-                <span>Saving...</span>
+                <>
+                  <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  <span>Saving...</span>
+                </>
               ) : initialData ? (
                 <span>Update Vehicle</span>
               ) : (
