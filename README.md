@@ -58,6 +58,13 @@ car-dealership/
    npm install
    ```
 
+## Database Configuration
+
+The system uses Mongoose to manage MongoDB Atlas / MongoDB connection logic (`backend/src/config/db.ts`).
+
+- Environment Variable: `MONGO_URI`
+- Supports connection & disconnection lifecycle handling with full unit test coverage (`src/tests/db.test.ts`).
+
 ## Running the Application
 - Backend development server: `npm run dev` (from `backend/` directory)
 - Frontend development server: `npm run dev` (from `frontend/` directory)
@@ -65,3 +72,4 @@ car-dealership/
 ## Running Tests
 - Backend tests: `npm test` (from `backend/` directory)
 - Frontend tests: `npm test` (from `frontend/` directory)
+

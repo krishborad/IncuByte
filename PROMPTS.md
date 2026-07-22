@@ -146,4 +146,49 @@ This document records all AI interactions, prompts, responses, and manual change
 - **Manual Changes**: None
 - **Final Outcome**: Full stack project environment, toolchain, folder structure, testing frameworks, and remote synchronization complete.
 
+---
+
+## Step 4
+- **Date**: 2026-07-22
+- **Feature**: MongoDB Atlas Database Connection & TDD Test Suite
+- **AI Tool**: Antigravity (Gemini 3.6 Flash (High))
+- **Exact Prompt**:
+  ```text
+  Configure MongoDB Atlas.
+
+  Create database connection.
+
+  Write tests.
+
+  Connection success.
+
+  Connection failure.
+
+  Implement.
+
+  Run tests.
+
+  Update README.
+
+  Update PROMPTS.md.
+
+  Commit.
+
+  Push.
+
+  Stop.
+  ```
+- **AI Response Summary**:
+  - Followed strict TDD workflow (RED → GREEN → REFACTOR).
+  - **RED Phase**: Created unit tests in `backend/src/tests/db.test.ts` for database connection success (`connectDB`), connection failure, environment variable fallback (`MONGO_URI`), missing URI error, and disconnection lifecycle (`disconnectDB`). Verified test failure due to missing module.
+  - **GREEN Phase**: Implemented `connectDB` and `disconnectDB` in `backend/src/config/db.ts` using Mongoose and `process.env.MONGO_URI`.
+  - **REFACTOR Phase**: Refactored host string extraction with safe optional chaining (`conn?.connection?.host`) and environment-aware logging.
+  - **Verification**: Ran test suites; all 7 unit tests passed.
+  - Updated `README.md` with Database Configuration details and appended interaction record to `PROMPTS.md`.
+  - Committed and pushed feature to GitHub repository (`https://github.com/krishborad/IncuByte.git`).
+  - Stopped as instructed.
+- **Manual Changes**: None
+- **Final Outcome**: MongoDB Atlas connection module implemented using strict TDD, fully covered by unit tests, documented, and pushed to GitHub.
+
+
 
