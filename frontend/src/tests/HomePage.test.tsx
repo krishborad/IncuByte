@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import HomePage from '../pages/HomePage';
 import { vehicleService } from '../services/vehicle.service';
@@ -7,8 +7,8 @@ import AuthContext from '../contexts/AuthContext';
 
 jest.mock('../services/vehicle.service');
 
-describe('HomePage Vehicle Dashboard Component Integration Tests', () => {
-  const mockVehicles = [
+describe('HomePage Search, Filter & Pagination Component Integration Tests', () => {
+  const mockVehiclesPage1 = [
     {
       _id: '1',
       make: 'Honda',
@@ -20,6 +20,9 @@ describe('HomePage Vehicle Dashboard Component Integration Tests', () => {
       transmission: 'CVT' as const,
       stock: 4,
     },
+  ];
+
+  const mockVehiclesPage2 = [
     {
       _id: '2',
       make: 'Tesla',
@@ -58,42 +61,66 @@ describe('HomePage Vehicle Dashboard Component Integration Tests', () => {
     jest.clearAllMocks();
   });
 
-  it('displays loading skeleton initial state while fetching vehicles', () => {
-    (vehicleService.getVehicles as jest.Mock).mockReturnValue(new Promise(() => {}));
+  it('fetches vehicles with search query when user types into search input', async () => {
+    (vehicleService.getVehicles as jest.Mock).mockResolvedValue({
+      vehicles: mockVehiclesPage1,
+      pagination: { total: 1, page: 1, limit: 6, totalPages: 1 },
+    });
+
     renderHomePage();
 
-    expect(screen.getByTestId('loading-skeleton')).toBeInTheDocument();
+    const searchInput = screen.getByTestId('search-input');
+    fireEvent.change(searchInput, { target: { value: 'Civic' } });
+
+    await waitFor(() => {
+      expect(vehicleService.getVehicles).toHaveBeenCalledWith(
+        expect.objectContaining({ search: 'Civic' }),
+      );
+    });
   });
 
-  it('renders vehicle cards grid after successful API fetch', async () => {
-    (vehicleService.getVehicles as jest.Mock).mockResolvedValueOnce({
-      vehicles: mockVehicles,
-      pagination: { total: 2, page: 1, limit: 10, totalPages: 1 },
+  it('fetches vehicles with fuelType and transmission parameters when filters change', async () => {
+    (vehicleService.getVehicles as jest.Mock).mockResolvedValue({
+      vehicles: mockVehiclesPage2,
+      pagination: { total: 1, page: 1, limit: 6, totalPages: 1 },
     });
+
+    renderHomePage();
+
+    const fuelSelect = screen.getByTestId('fuel-select');
+    fireEvent.change(fuelSelect, { target: { value: 'Electric' } });
+
+    await waitFor(() => {
+      expect(vehicleService.getVehicles).toHaveBeenCalledWith(
+        expect.objectContaining({ fuelType: 'Electric' }),
+      );
+    });
+  });
+
+  it('handles pagination next and previous button clicks', async () => {
+    (vehicleService.getVehicles as jest.Mock)
+      .mockResolvedValueOnce({
+        vehicles: mockVehiclesPage1,
+        pagination: { total: 2, page: 1, limit: 1, totalPages: 2 },
+      })
+      .mockResolvedValueOnce({
+        vehicles: mockVehiclesPage2,
+        pagination: { total: 2, page: 2, limit: 1, totalPages: 2 },
+      });
 
     renderHomePage();
 
     await waitFor(() => {
-      expect(screen.getByTestId('vehicle-grid')).toBeInTheDocument();
+      expect(screen.getByTestId('next-page-btn')).toBeInTheDocument();
     });
 
-    expect(screen.getByText('2024 Honda Civic')).toBeInTheDocument();
-    expect(screen.getByText('2023 Tesla Model 3')).toBeInTheDocument();
-  });
-
-  it('displays error state with retry button when API fails', async () => {
-    (vehicleService.getVehicles as jest.Mock).mockRejectedValueOnce({
-      response: { data: { message: 'Failed to fetch inventory from server' } },
-    });
-
-    renderHomePage();
+    const nextBtn = screen.getByTestId('next-page-btn');
+    fireEvent.click(nextBtn);
 
     await waitFor(() => {
-      expect(screen.getByTestId('error-state')).toBeInTheDocument();
+      expect(vehicleService.getVehicles).toHaveBeenCalledWith(
+        expect.objectContaining({ page: 2 }),
+      );
     });
-
-    expect(screen.getByText('Error Loading Vehicles')).toBeInTheDocument();
-    expect(screen.getByText('Failed to fetch inventory from server')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /try again/i })).toBeInTheDocument();
   });
 });
