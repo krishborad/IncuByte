@@ -106,4 +106,14 @@ export class VehicleService {
       },
     };
   }
+
+  async updateVehicle(id: string, updateData: Partial<IVehicle>): Promise<IVehicle> {
+    const updatedVehicle = await this.vehicleRepository.update(id, updateData);
+    if (!updatedVehicle) {
+      const error: any = new Error('Vehicle not found');
+      error.statusCode = 404;
+      throw error;
+    }
+    return updatedVehicle;
+  }
 }

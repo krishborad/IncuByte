@@ -87,7 +87,9 @@ Full-stack authentication system built using Repository → Service → Controll
 
 ### Endpoints
 - `POST /api/vehicles` - Add a new vehicle to dealership inventory (**Admin Only**, Requires `Bearer <token>` with `role: 'admin'`)
+- `PUT /api/vehicles/:id` - Update an existing vehicle (**Admin Only**, Requires `Bearer <token>` with `role: 'admin'`)
 - `GET /api/vehicles` - Fetch paginated, filtered, and sorted list of vehicles (**Public Route**)
+
   - **Query Parameters**:
     - `search` / `q`: Global search keyword (case-insensitive `$or` search across `make`, `model`, and `description`)
     - `page` (default: 1): Page number

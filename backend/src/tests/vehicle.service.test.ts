@@ -144,4 +144,32 @@ describe('VehicleService Unit Tests', () => {
       );
     });
   });
+
+  describe('updateVehicle', () => {
+    it('should successfully update and return the vehicle', async () => {
+      const vehicleId = '507f1f77bcf86cd799439022';
+      const updatePayload = { price: 24000, stock: 5 };
+      const updatedVehicle = {
+        _id: vehicleId,
+        ...sampleVehicleData,
+        ...updatePayload,
+      } as any;
+
+      mockVehicleRepository.update.mockResolvedValueOnce(updatedVehicle);
+
+      const result = await vehicleService.updateVehicle(vehicleId, updatePayload);
+
+      expect(mockVehicleRepository.update).toHaveBeenCalledWith(vehicleId, updatePayload);
+      expect(result).toEqual(updatedVehicle);
+      expect(result.price).toBe(24000);
+      expect(result.stock).toBe(5);
+    });
+
+    it('should throw a 404 error if vehicle to update is not found', async () => {
+      const vehicleId = 'non_existent_id';
+      mockVehicleRepository.update.mockResolvedValueOnce(null);
+
+      await expect(vehicleService.updateVehicle(vehicleId, { price: 20000 })).rejects.toThrow('Vehicle not found');
+    });
+  });
 });

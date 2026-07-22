@@ -28,4 +28,17 @@ export class VehicleController {
       next(error);
     }
   };
+
+  updateVehicle = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const vehicle = await this.vehicleService.updateVehicle(req.params.id, req.body);
+      res.status(200).json({
+        success: true,
+        message: 'Vehicle updated successfully',
+        data: vehicle,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }

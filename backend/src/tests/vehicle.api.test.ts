@@ -3,7 +3,7 @@ import app from '../app';
 import { VehicleService } from '../services/vehicle.service';
 import { generateToken } from '../utils/jwt.utils';
 
-describe('Vehicle API Integration Tests (GET & POST /api/vehicles)', () => {
+describe('Vehicle API Integration Tests (GET, POST, PUT /api/vehicles)', () => {
   let adminToken: string;
   let customerToken: string;
 
@@ -142,6 +142,69 @@ describe('Vehicle API Integration Tests (GET & POST /api/vehicles)', () => {
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(getVehiclesSpy).toHaveBeenCalledWith(expect.objectContaining({ search: 'sports' }));
+    });
+  });
+
+  describe('PUT /api/vehicles/:id (Admin Protected Update Route)', () => {
+    const vehicleId = '507f1f77bcf86cd799439099';
+    const updatePayload = { price: 72000, stock: 5 };
+
+    it('should allow admin to update an existing vehicle (200 OK)', async () => {
+      const mockUpdatedVehicle = {
+        _id: vehicleId,
+        ...validVehiclePayload,
+        ...updatePayload,
+      };
+
+      jest.spyOn(VehicleService.prototype, 'updateVehicle').mockResolvedValueOnce(mockUpdatedVehicle as any);
+
+      const res = await request(app)
+        .put(`/api/vehicles/${vehicleId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send(updatePayload);
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.price).toBe(72000);
+      expect(res.body.data.stock).toBe(5);
+    });
+
+    it('should deny non-admin users from updating with 403 Forbidden', async () => {
+      const res = await request(app)
+        .put(`/api/vehicles/${vehicleId}`)
+        .set('Authorization', `Bearer ${customerToken}`)
+        .send(updatePayload);
+
+      expect(res.status).toBe(403);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toContain('Admin rights required');
+    });
+
+    it('should return 404 Not Found if vehicle does not exist', async () => {
+      const notFoundError: any = new Error('Vehicle not found');
+      notFoundError.statusCode = 404;
+
+      jest.spyOn(VehicleService.prototype, 'updateVehicle').mockRejectedValueOnce(notFoundError);
+
+      const res = await request(app)
+        .put('/api/vehicles/non_existent_id')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send(updatePayload);
+
+      expect(res.status).toBe(404);
+      expect(res.body.success).toBe(false);
+      expect(res.body.message).toContain('Vehicle not found');
+    });
+
+    it('should return 400 Bad Request for invalid update values (e.g. negative price)', async () => {
+      const res = await request(app)
+        .put(`/api/vehicles/${vehicleId}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ price: -5000 });
+
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.errors).toBeDefined();
     });
   });
 });

@@ -491,6 +491,51 @@ This document records all AI interactions, prompts, responses, and manual change
 - **Manual Changes**: None
 - **Final Outcome**: Vehicle search feature across Make, Model, Price, Year, Fuel, Transmission, and Description with pagination successfully implemented with 100% test coverage and pushed to GitHub.
 
+---
+
+## Step 11
+- **Date**: 2026-07-22
+- **Feature**: Update Vehicle API Endpoint (Admin Only & Input Validation)
+- **AI Tool**: Antigravity (Gemini 3.6 Flash (High))
+- **Exact Prompt**:
+  ```text
+  Implement Update Vehicle API.
+
+  Admin only.
+
+  Validation.
+
+  Tests first.
+
+  Implement.
+
+  Run tests.
+
+  Commit.
+
+  Push.
+
+  Stop.
+  ```
+- **AI Response Summary**:
+  - Followed strict TDD workflow (RED → GREEN → REFACTOR).
+  - **RED Phase**:
+    - Wrote unit tests in `backend/src/tests/vehicle.service.test.ts` for successful update and 404 not found handling.
+    - Wrote integration tests in `backend/src/tests/vehicle.api.test.ts` for `PUT /api/vehicles/:id` covering Admin update (`200 OK`), non-admin block (`403 Forbidden`), non-existent vehicle (`404 Not Found`), and invalid payload (`400 Bad Request`). Verified test failure prior to implementation.
+  - **GREEN Phase**:
+    - Created `validateVehicleUpdate` validator middleware in `backend/src/validators/vehicle.validator.ts`.
+    - Added `updateVehicle` method in `VehicleService` (`backend/src/services/vehicle.service.ts`) using `VehicleRepository.update`.
+    - Added `updateVehicle` controller method in `backend/src/controllers/vehicle.controller.ts`.
+    - Mounted `PUT /:id` in `backend/src/routes/vehicle.routes.ts` protected by `authenticate`, `requireAdmin`, and `validateVehicleUpdate`.
+  - **REFACTOR Phase**: Ensured partial updates and Mongoose `runValidators` flag during update executions.
+  - **Verification**: Executed backend test suite. All 58 unit & integration tests passed cleanly (100%).
+  - Updated `README.md` with Update Vehicle endpoint documentation and appended interaction log to `PROMPTS.md`.
+  - Committed and pushed feature to GitHub (`https://github.com/krishborad/IncuByte.git`).
+  - Stopped as instructed.
+- **Manual Changes**: None
+- **Final Outcome**: Update Vehicle admin-protected endpoint successfully implemented with 100% test coverage and pushed to GitHub.
+
+
 
 
 

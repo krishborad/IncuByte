@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { VehicleController } from '../controllers/vehicle.controller';
-import { validateVehicle } from '../validators/vehicle.validator';
+import { validateVehicle, validateVehicleUpdate } from '../validators/vehicle.validator';
 import { authenticate, requireAdmin } from '../middlewares/auth.middleware';
 
 const router = Router();
@@ -11,5 +11,8 @@ router.get('/', vehicleController.getVehicles);
 
 // Admin only: Add a new vehicle
 router.post('/', authenticate, requireAdmin, validateVehicle, vehicleController.createVehicle);
+
+// Admin only: Update an existing vehicle
+router.put('/:id', authenticate, requireAdmin, validateVehicleUpdate, vehicleController.updateVehicle);
 
 export default router;
