@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useForm } from 'react-hook-form';
 import { vehicleService, CreateVehiclePayload } from '../services/vehicle.service';
+import VehicleFormModal from '../components/VehicleFormModal';
 import { Vehicle } from '../types';
 
 export const AdminDashboardPage: React.FC = () => {
@@ -18,14 +18,6 @@ export const AdminDashboardPage: React.FC = () => {
 
   const [deletingVehicleId, setDeletingVehicleId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<boolean>(false);
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    setValue,
-    formState: { errors },
-  } = useForm<CreateVehiclePayload>();
 
   const fetchInventory = useCallback(async () => {
     setLoading(true);
@@ -52,33 +44,11 @@ export const AdminDashboardPage: React.FC = () => {
 
   const handleOpenCreateModal = () => {
     setEditingVehicle(null);
-    reset({
-      make: '',
-      model: '',
-      year: new Date().getFullYear(),
-      price: 25000,
-      mileage: 1000,
-      fuelType: 'Gasoline',
-      transmission: 'Automatic',
-      stock: 5,
-      image: '',
-      description: '',
-    });
     setShowVehicleModal(true);
   };
 
   const handleOpenEditModal = (vehicle: Vehicle) => {
     setEditingVehicle(vehicle);
-    setValue('make', vehicle.make);
-    setValue('model', vehicle.model);
-    setValue('year', vehicle.year);
-    setValue('price', vehicle.price);
-    setValue('mileage', vehicle.mileage);
-    setValue('fuelType', vehicle.fuelType);
-    setValue('transmission', vehicle.transmission);
-    setValue('stock', vehicle.stock);
-    setValue('image', vehicle.image || '');
-    setValue('description', vehicle.description || '');
     setShowVehicleModal(true);
   };
 
@@ -93,7 +63,6 @@ export const AdminDashboardPage: React.FC = () => {
         setVehicles((prev) => [created, ...prev]);
       }
       setShowVehicleModal(false);
-      reset();
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to save vehicle details.');
     } finally {
@@ -271,155 +240,14 @@ export const AdminDashboardPage: React.FC = () => {
         )}
       </div>
 
-      {/* Create / Edit Vehicle Modal */}
-      {showVehicleModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 overflow-y-auto" data-testid="vehicle-modal">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-xl w-full shadow-2xl my-8 space-y-6">
-            <div className="flex justify-between items-center border-b border-slate-800 pb-4">
-              <h3 className="text-2xl font-bold text-white">
-                {editingVehicle ? 'Edit Vehicle Details' : 'Add New Vehicle to Inventory'}
-              </h3>
-              <button onClick={() => setShowVehicleModal(false)} className="text-slate-400 hover:text-white p-1">
-                ✕
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmit(handleSaveVehicle)} className="space-y-4" noValidate>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="make" className="block text-xs font-medium text-slate-300 mb-1">Make</label>
-                  <input
-                    id="make"
-                    type="text"
-                    className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500"
-                    {...register('make', { required: 'Make is required' })}
-                  />
-                  {errors.make && <p className="text-xs text-rose-400 mt-1">{errors.make.message}</p>}
-                </div>
-                <div>
-                  <label htmlFor="model" className="block text-xs font-medium text-slate-300 mb-1">Model</label>
-                  <input
-                    id="model"
-                    type="text"
-                    className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500"
-                    {...register('model', { required: 'Model is required' })}
-                  />
-                  {errors.model && <p className="text-xs text-rose-400 mt-1">{errors.model.message}</p>}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label htmlFor="year" className="block text-xs font-medium text-slate-300 mb-1">Year</label>
-                  <input
-                    id="year"
-                    type="number"
-                    className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500"
-                    {...register('year', { valueAsNumber: true, required: 'Year is required' })}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="price" className="block text-xs font-medium text-slate-300 mb-1">Price ($)</label>
-                  <input
-                    id="price"
-                    type="number"
-                    className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500"
-                    {...register('price', { valueAsNumber: true, required: 'Price is required' })}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="stock" className="block text-xs font-medium text-slate-300 mb-1">Initial Stock</label>
-                  <input
-                    id="stock"
-                    type="number"
-                    className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500"
-                    {...register('stock', { valueAsNumber: true })}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="mileage" className="block text-xs font-medium text-slate-300 mb-1">Mileage (mi)</label>
-                  <input
-                    id="mileage"
-                    type="number"
-                    className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500"
-                    {...register('mileage', { valueAsNumber: true, required: 'Mileage is required' })}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="fuelType" className="block text-xs font-medium text-slate-300 mb-1">Fuel Type</label>
-                  <select
-                    id="fuelType"
-                    className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500"
-                    {...register('fuelType')}
-                  >
-                    <option value="Gasoline">Gasoline</option>
-                    <option value="Diesel">Diesel</option>
-                    <option value="Electric">Electric</option>
-                    <option value="Hybrid">Hybrid</option>
-                    <option value="Plug-in Hybrid">Plug-in Hybrid</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="transmission" className="block text-xs font-medium text-slate-300 mb-1">Transmission</label>
-                <select
-                  id="transmission"
-                  className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500"
-                  {...register('transmission')}
-                >
-                  <option value="Automatic">Automatic</option>
-                  <option value="Manual">Manual</option>
-                  <option value="CVT">CVT</option>
-                  <option value="Dual-Clutch">Dual-Clutch</option>
-                </select>
-              </div>
-
-              <div>
-                <label htmlFor="image" className="block text-xs font-medium text-slate-300 mb-1">Image URL</label>
-                <input
-                  id="image"
-                  type="url"
-                  placeholder="https://example.com/vehicle-image.jpg"
-                  className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500"
-                  {...register('image')}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="description" className="block text-xs font-medium text-slate-300 mb-1">Description</label>
-                <textarea
-                  id="description"
-                  rows={3}
-                  className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500"
-                  {...register('description')}
-                />
-              </div>
-
-              <div className="flex space-x-3 pt-4 border-t border-slate-800">
-                <button
-                  type="button"
-                  onClick={() => setShowVehicleModal(false)}
-                  className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-3 rounded-xl transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={actionLoading}
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-semibold py-3 rounded-xl transition-colors shadow-lg shadow-indigo-500/25"
-                  data-testid="save-vehicle-submit"
-                >
-                  {actionLoading ? 'Saving...' : editingVehicle ? 'Update Vehicle' : 'Create Vehicle'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* Vehicle Add / Edit Form Modal */}
+      <VehicleFormModal
+        isOpen={showVehicleModal}
+        onClose={() => setShowVehicleModal(false)}
+        onSubmit={handleSaveVehicle}
+        initialData={editingVehicle}
+        loading={actionLoading}
+      />
 
       {/* Restock Inventory Modal */}
       {showRestockModal && restockVehicleItem && (
