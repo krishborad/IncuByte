@@ -23,6 +23,11 @@ app.get('/api/health', (_req: Request, res: Response) => {
   });
 });
 
+// Ping Route (for UptimeRobot to keep Render instance alive)
+app.get('/ping', (_req: Request, res: Response) => {
+  res.status(200).send('ok');
+});
+
 // Primary API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/vehicles', vehicleRoutes);
